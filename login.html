@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - CareerPath Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #2c3e50;
+        --secondary: #3498db;
+        --accent: #e74c3c;
+        --light: #ecf0f1;
+        --dark: #2c3e50;
+        --success: #2ecc71;
+        --warning: #f39c12;
+        --danger: #e74c3c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* Header Styles */
+      header {
+        background-color: var(--primary);
+        color: white;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo i {
+        font-size: 24px;
+        color: var(--secondary);
+      }
+
+      .logo h1 {
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+        gap: 25px;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      nav a:hover {
+        color: var(--secondary);
+      }
+
+      .user-actions {
+        display: flex;
+        gap: 15px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--secondary);
+        color: var(--secondary);
+      }
+
+      .btn-primary {
+        background: var(--secondary);
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Login Section */
+      .login-section {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+      }
+
+      .login-container {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .login-header {
+        background: var(--primary);
+        color: white;
+        padding: 25px;
+        text-align: center;
+      }
+
+      .login-header h2 {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+
+      .login-body {
+        padding: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark);
+      }
+
+      .required::after {
+        content: " *";
+        color: var(--danger);
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--secondary);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      }
+
+      .login-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .forgot-password {
+        color: var(--secondary);
+        text-decoration: none;
+      }
+
+      .forgot-password:hover {
+        text-decoration: underline;
+      }
+
+      .login-button {
+        width: 100%;
+        padding: 12px;
+        background: var(--secondary);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-bottom: 20px;
+      }
+
+      .login-button:hover {
+        background: #2980b9;
+      }
+
+      .divider {
+        text-align: center;
+        position: relative;
+        margin: 25px 0;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+      }
+
+      .divider span {
+        background: white;
+        padding: 0 15px;
+        color: #7f8c8d;
+      }
+
+      .user-type-selection {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .user-type-btn {
+        flex: 1;
+        padding: 12px;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+      }
+
+      .user-type-btn.active {
+        background: var(--secondary);
+        color: white;
+        border-color: var(--secondary);
+      }
+
+      .register-link {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .register-link a {
+        color: var(--secondary);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .register-link a:hover {
+        text-decoration: underline;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--primary);
+        color: white;
+        padding: 40px 0 20px;
+        margin-top: auto;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .footer-column h3 {
+        margin-bottom: 20px;
+        font-size: 18px;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .footer-column h3::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        height: 2px;
+        background: var(--secondary);
+      }
+
+      .footer-column ul {
+        list-style: none;
+      }
+
+      .footer-column ul li {
+        margin-bottom: 10px;
+      }
+
+      .footer-column a {
+        color: #bdc3c7;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .footer-column a:hover {
+        color: var(--secondary);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #34495e;
+        color: #bdc3c7;
+        font-size: 14px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        nav ul {
+          gap: 15px;
+        }
+
+        .login-options {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <h1>CareerPath Portal</h1>
+          </div>
+          <nav>
+            <ul>
+              <li>
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-briefcase"></i> Internships</a>
+              </li>
+              <li>
+                <a href="dashboard.html"
+                  ><i class="fas fa-chart-line"></i> Dashboard</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+              </li>
+            </ul>
+          </nav>
+          <div class="user-actions">
+            <button
+              class="btn btn-primary"
+              onclick="location.href='register.html'"
+            >
+              <i class="fas fa-user-plus"></i> Register
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Login Section -->
+    <section class="login-section">
+      <div class="container">
+        <div class="login-container">
+          <div class="login-header">
+            <h2>Login to Your Account</h2>
+            <p>Access your dashboard and internship opportunities</p>
+          </div>
+          <div class="login-body">
+            <div class="user-type-selection">
+              <div class="user-type-btn active" data-user-type="student">
+                Student
+              </div>
+              <div class="user-type-btn" data-user-type="faculty">Faculty</div>
+              <div class="user-type-btn" data-user-type="placement">
+                Placement Cell
+              </div>
+            </div>
+
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="email" class="required">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email address"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password" class="required">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+
+              <div class="login-options">
+                <div class="remember-me">
+                  <input type="checkbox" id="rememberMe" />
+                  <label for="rememberMe">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot Password?</a>
+              </div>
+
+              <button type="submit" class="login-button">
+                <i class="fas fa-sign-in-alt"></i> Login
+              </button>
+            </form>
+
+            <div class="divider">
+              <span>Or</span>
+            </div>
+
+            <div class="register-link">
+              <p>
+                Don't have an account? <a href="register.html">Register here</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="#">Internships</a></li>
+              <li><a href="#">Companies</a></li>
+              <li><a href="#">Resources</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Student Resources</h3>
+            <ul>
+              <li><a href="register.html">Create Profile</a></li>
+              <li><a href="#">Resume Builder</a></li>
+              <li><a href="#">Interview Preparation</a></li>
+              <li><a href="#">Skill Assessment</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>For Colleges</h3>
+            <ul>
+              <li><a href="#">Register College</a></li>
+              <li><a href="dashboard.html">Placement Cell Login</a></li>
+              <li><a href="dashboard.html">Faculty Login</a></li>
+              <li><a href="#">Partnership</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Info</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> Directorate of Technical
+                Education, Rajasthan
+              </li>
+              <li><i class="fas fa-phone"></i> +91-141-1234567</li>
+              <li><i class="fas fa-envelope"></i> placement@dterajasthan.in</li>
+            </ul>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>&copy; Directorate of Technical Education, Rajasthan.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // User type selection
+      document.querySelectorAll(".user-type-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".user-type-btn")
+            .forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+      // Form submission
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const userType = document
+            .querySelector(".user-type-btn.active")
+            .getAttribute("data-user-type");
+
+          // Simple validation
+          if (!email || !password) {
+            alert("Please fill in all fields");
+            return;
+          }
+
+          // In a real application, you would send this data to a server
+          // For this demo, we'll redirect based on user type
+          if (userType === "student") {
+            // Redirect to student dashboard (not implemented in this demo)
+            alert(
+              "Student login successful! Redirecting to student dashboard..."
+            );
+            // location.href = 'student-dashboard.html';
+          } else if (userType === "faculty" || userType === "placement") {
+            // Redirect to faculty/placement dashboard
+            location.href = "dashboard.html";
+          }
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Registration - CareerPath Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #2c3e50;
+        --secondary: #3498db;
+        --accent: #e74c3c;
+        --light: #ecf0f1;
+        --dark: #2c3e50;
+        --success: #2ecc71;
+        --warning: #f39c12;
+        --danger: #e74c3c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* Header Styles */
+      header {
+        background-color: var(--primary);
+        color: white;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo i {
+        font-size: 24px;
+        color: var(--secondary);
+      }
+
+      .logo h1 {
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+        gap: 25px;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      nav a:hover {
+        color: var(--secondary);
+      }
+
+      .user-actions {
+        display: flex;
+        gap: 15px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--secondary);
+        color: var(--secondary);
+      }
+
+      .btn-primary {
+        background: var(--secondary);
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Registration Form Styles */
+      .registration-section {
+        padding: 40px 0;
+        min-height: calc(100vh - 140px);
+        display: flex;
+        align-items: center;
+      }
+
+      .registration-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .form-header {
+        background: var(--primary);
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .form-header h2 {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+
+      .form-body {
+        padding: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 20px;
+      }
+
+      .form-row .form-group {
+        flex: 1;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--dark);
+      }
+
+      .required::after {
+        content: " *";
+        color: var(--danger);
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--secondary);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      }
+
+      .photo-upload {
+        border: 2px dashed #ddd;
+        border-radius: 4px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .photo-upload:hover {
+        border-color: var(--secondary);
+        background: #f8f9fa;
+      }
+
+      .photo-upload i {
+        font-size: 40px;
+        color: #7f8c8d;
+        margin-bottom: 10px;
+      }
+
+      .photo-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 15px;
+        display: none;
+        border: 3px solid var(--secondary);
+      }
+
+      .college-search-container {
+        position: relative;
+      }
+
+      .college-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 10;
+        display: none;
+      }
+
+      .college-result {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+      }
+
+      .college-result:hover {
+        background: #f5f7fa;
+      }
+
+      .no-results {
+        padding: 10px 15px;
+        color: #7f8c8d;
+        text-align: center;
+      }
+
+      .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+
+      .terms {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+      }
+
+      /* Success Message */
+      .success-message {
+        display: none;
+        text-align: center;
+        padding: 40px;
+      }
+
+      .success-icon {
+        font-size: 60px;
+        color: var(--success);
+        margin-bottom: 20px;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--primary);
+        color: white;
+        padding: 40px 0 20px;
+        margin-top: 60px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .footer-column h3 {
+        margin-bottom: 20px;
+        font-size: 18px;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .footer-column h3::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        height: 2px;
+        background: var(--secondary);
+      }
+
+      .footer-column ul {
+        list-style: none;
+      }
+
+      .footer-column ul li {
+        margin-bottom: 10px;
+      }
+
+      .footer-column a {
+        color: #bdc3c7;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .footer-column a:hover {
+        color: var(--secondary);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #34495e;
+        color: #bdc3c7;
+        font-size: 14px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        nav ul {
+          gap: 15px;
+        }
+
+        .form-row {
+          flex-direction: column;
+          gap: 0;
+        }
+
+        .form-footer {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <h1>CareerPath Portal</h1>
+          </div>
+          <nav>
+            <ul>
+              <li>
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-briefcase"></i> Internships</a>
+              </li>
+              <li>
+                <a href="dashboard.html"
+                  ><i class="fas fa-chart-line"></i> Dashboard</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+              </li>
+            </ul>
+          </nav>
+          <div class="user-actions">
+            <button
+              class="btn btn-outline"
+              onclick="location.href='login.html'"
+            >
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <button
+              class="btn btn-primary"
+              onclick="location.href='register.html'"
+            >
+              <i class="fas fa-user-plus"></i> Register
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Student Registration Section -->
+    <section class="registration-section">
+      <div class="container">
+        <div class="registration-container">
+          <div class="form-header">
+            <h2>Student Registration</h2>
+            <p>Create your account to access internship opportunities</p>
+          </div>
+
+          <div class="form-body" id="registrationForm">
+            <form id="studentRegistrationForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fullName" class="required">Full Name</label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="regNumber" class="required"
+                    >College Registration Number</label
+                  >
+                  <input
+                    type="text"
+                    id="regNumber"
+                    name="regNumber"
+                    placeholder="Enter your college registration number"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="email" class="required">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="mobile" class="required">Mobile Number</label>
+                  <input
+                    type="tel"
+                    id="mobile"
+                    name="mobile"
+                    placeholder="Enter your mobile number"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="collegeSearch" class="required">College Name</label>
+                <div class="college-search-container">
+                  <input
+                    type="text"
+                    id="collegeSearch"
+                    name="collegeSearch"
+                    placeholder="Search for your college"
+                    required
+                  />
+                  <div class="college-results" id="collegeResults">
+                    <!-- College results will be populated here -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="semester" class="required"
+                    >Current Semester</label
+                  >
+                  <select id="semester" name="semester" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="department" class="required">Department</label>
+                  <select id="department" name="department" required>
+                    <option value="">Select Department</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">
+                      Information Technology
+                    </option>
+                    <option value="Mechanical Engineering">
+                      Mechanical Engineering
+                    </option>
+                    <option value="Electrical Engineering">
+                      Electrical Engineering
+                    </option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Electronics & Communication">
+                      Electronics & Communication
+                    </option>
+                    <option value="Chemical Engineering">
+                      Chemical Engineering
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="profilePhoto" class="required">Profile Photo</label>
+                <div class="photo-upload" id="photoUpload">
+                  <img
+                    id="photoPreview"
+                    class="photo-preview"
+                    alt="Profile Photo Preview"
+                  />
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Click to upload your profile photo (JPEG, max 2MB)</p>
+                  <input
+                    type="file"
+                    id="profilePhoto"
+                    name="profilePhoto"
+                    accept=".jpg,.jpeg"
+                    style="display: none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-footer">
+                <div class="terms">
+                  <input type="checkbox" id="agreeTerms" required />
+                  <label for="agreeTerms"
+                    >I agree to the <a href="#">Terms and Conditions</a> and
+                    <a href="#">Privacy Policy</a></label
+                  >
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-user-plus"></i> Create Account
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Success Message (Hidden by default) -->
+          <div class="success-message" id="successMessage">
+            <div class="success-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Registration Successful!</h2>
+            <p>
+              Your account has been created successfully and is pending
+              verification by your college.
+            </p>
+            <p>You will receive an email once your account is verified.</p>
+            <div style="margin-top: 30px">
+              <button
+                class="btn btn-primary"
+                onclick="location.href='login.html'"
+              >
+                <i class="fas fa-sign-in-alt"></i> Login Now
+              </button>
+              <button
+                class="btn btn-outline"
+                onclick="location.href='index.html'"
+              >
+                <i class="fas fa-home"></i> Return to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="#">Internships</a></li>
+              <li><a href="#">Companies</a></li>
+              <li><a href="#">Resources</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Student Resources</h3>
+            <ul>
+              <li><a href="register.html">Create Profile</a></li>
+              <li><a href="#">Resume Builder</a></li>
+              <li><a href="#">Interview Preparation</a></li>
+              <li><a href="#">Skill Assessment</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>For Colleges</h3>
+            <ul>
+              <li><a href="#">Register College</a></li>
+              <li><a href="dashboard.html">Placement Cell Login</a></li>
+              <li><a href="dashboard.html">Faculty Login</a></li>
+              <li><a href="#">Partnership</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Info</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> Directorate of Technical
+                Education, Rajasthan
+              </li>
+              <li><i class="fas fa-phone"></i> +91-141-1234567</li>
+              <li><i class="fas fa-envelope"></i> placement@dterajasthan.in</li>
+            </ul>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>&copy; Directorate of Technical Education, Rajasthan.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Sample data for registered colleges
+      const registeredColleges = [
+        "Rajasthan Technical University, Kota",
+        "Malaviya National Institute of Technology, Jaipur",
+        "College of Technology and Engineering, Udaipur",
+        "Government Engineering College, Ajmer",
+        "Jodhpur Institute of Engineering and Technology, Jodhpur",
+        "Swami Keshvanand Institute of Technology, Jaipur",
+        "Bikaner Technical University, Bikaner",
+        "MBM Engineering College, Jodhpur",
+        "Rajasthan College of Engineering for Women, Jaipur",
+        "Vivekananda Global University, Jaipur",
+      ];
+
+      // DOM Elements
+      const collegeSearch = document.getElementById("collegeSearch");
+      const collegeResults = document.getElementById("collegeResults");
+      const photoUpload = document.getElementById("photoUpload");
+      const profilePhoto = document.getElementById("profilePhoto");
+      const photoPreview = document.getElementById("photoPreview");
+      const registrationForm = document.getElementById(
+        "studentRegistrationForm"
+      );
+      const successMessage = document.getElementById("successMessage");
+
+      // College search functionality
+      collegeSearch.addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase();
+        collegeResults.innerHTML = "";
+
+        if (searchTerm.length < 2) {
+          collegeResults.style.display = "none";
+          return;
+        }
+
+        const filteredColleges = registeredColleges.filter((college) =>
+          college.toLowerCase().includes(searchTerm)
+        );
+
+        if (filteredColleges.length > 0) {
+          filteredColleges.forEach((college) => {
+            const resultItem = document.createElement("div");
+            resultItem.className = "college-result";
+            resultItem.textContent = college;
+            resultItem.addEventListener("click", function () {
+              collegeSearch.value = college;
+              collegeResults.style.display = "none";
+            });
+            collegeResults.appendChild(resultItem);
+          });
+          collegeResults.style.display = "block";
+        } else {
+          const noResults = document.createElement("div");
+          noResults.className = "no-results";
+          noResults.textContent =
+            "No college found with this name. Please check if your college is registered.";
+          collegeResults.appendChild(noResults);
+          collegeResults.style.display = "block";
+        }
+      });
+
+      // Close college results when clicking outside
+      document.addEventListener("click", function (e) {
+        if (
+          !collegeSearch.contains(e.target) &&
+          !collegeResults.contains(e.target)
+        ) {
+          collegeResults.style.display = "none";
+        }
+      });
+
+      // Photo upload functionality
+      photoUpload.addEventListener("click", function () {
+        profilePhoto.click();
+      });
+
+      profilePhoto.addEventListener("change", function () {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            photoPreview.src = e.target.result;
+            photoPreview.style.display = "block";
+            photoUpload.querySelector("i").style.display = "none";
+            photoUpload.querySelector("p").style.display = "none";
+          };
+
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+
+      // Form submission
+      registrationForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Get form values
+        const formData = {
+          name: document.getElementById("fullName").value,
+          regNumber: document.getElementById("regNumber").value,
+          email: document.getElementById("email").value,
+          mobile: document.getElementById("mobile").value,
+          college: document.getElementById("collegeSearch").value,
+          semester: document.getElementById("semester").value,
+          department: document.getElementById("department").value,
+          photo: photoPreview.src || "",
+        };
+
+        // In a real application, you would send this data to a server
+        // For this demo, we'll just show the success message
+
+        // Hide form and show success message
+        document.getElementById("registrationForm").style.display = "none";
+        successMessage.style.display = "block";
+
+        // Store student data in localStorage for faculty dashboard
+        const students = JSON.parse(localStorage.getItem("students") || "[]");
+        students.push({
+          id: students.length + 1,
+          ...formData,
+          status: "pending",
+          registrationDate: new Date().toISOString(),
+        });
+        localStorage.setItem("students", JSON.stringify(students));
+      });
+    </script>
+  </body>
+</html>
