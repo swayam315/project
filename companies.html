@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companies - Campus Internship Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+            color: var(--secondary);
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--secondary);
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .page-header p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        /* Companies Section */
+        .companies-section {
+            padding: 60px 0;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            width: 300px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .search-box button {
+            padding: 10px 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Industry Filters */
+        .industry-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .industry-filter {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .industry-filter.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+        
+        .industry-filter:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Companies Grid */
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .company-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #eee;
+        }
+        
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .company-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 24px;
+            border: 2px solid #eee;
+        }
+        
+        .company-header h3 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .company-industry {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .company-details {
+            padding: 20px;
+        }
+        
+        .company-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .company-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .company-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .company-footer {
+            padding: 0 20px 20px;
+        }
+        
+        .view-openings {
+            width: 100%;
+            padding: 10px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .view-openings:hover {
+            background: #2980b9;
+        }
+        
+        /* Featured Companies */
+        .featured-section {
+            padding: 60px 0;
+            background: white;
+        }
+        
+        .featured-companies {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .featured-company {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .featured-company:hover {
+            transform: translateY(-5px);
+        }
+        
+        .featured-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--secondary);
+            font-weight: bold;
+            border: 2px solid #eee;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination-btn.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+        
+        .pagination-btn:hover:not(.active) {
+            background: #f8f9fa;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 60px 0 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--secondary);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--secondary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .search-box input {
+                width: 200px;
+            }
+            
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>Campus Internship Portal</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="internships.html"><i class="fas fa-briefcase"></i> Internships</a></li>
+                        <li><a href="companies.html" class="active"><i class="fas fa-building"></i> Companies</a></li>
+                        <li><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                        <li><a href="help.html"><i class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <button class="btn btn-outline" onclick="location.href='login.html'"><i class="fas fa-sign-in-alt"></i> Login</button>
+                    <button class="btn btn-primary" onclick="location.href='register.html'"><i class="fas fa-user-plus"></i> Register</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Partner Companies</h1>
+            <p>Discover companies that offer internship and placement opportunities through our platform</p>
+        </div>
+    </section>
+
+    <!-- Companies Section -->
+    <section class="companies-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Partner Companies</h2>
+                <div class="search-box">
+                    <input type="text" placeholder="Search companies...">
+                    <button><i class="fas fa-search"></i> Search</button>
+                </div>
+            </div>
+            
+            <!-- Industry Filters -->
+            <div class="industry-filters">
+                <div class="industry-filter active">All Industries</div>
+                <div class="industry-filter">IT & Software</div>
+                <div class="industry-filter">Engineering</div>
+                <div class="industry-filter">Finance</div>
+                <div class="industry-filter">Healthcare</div>
+                <div class="industry-filter">E-commerce</div>
+                <div class="industry-filter">Education</div>
+                <div class="industry-filter">Manufacturing</div>
+            </div>
+            
+            <!-- Companies Grid -->
+            <div class="companies-grid">
+                <!-- Company Card 1 -->
+                <div class="company-card">
+                    <div class="company-header">
+                        <div class="company-logo">TC</div>
+                        <h3>TechCorp Solutions</h3>
+                        <div class="company-industry">IT & Software</div>
+                    </div>
+                    <div class="company-details">
+                        <div class="company-info">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Jaipur, Rajasthan</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>500-1000 employees</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>www.techcorp.com</span>
+                            </div>
+                        </div>
+                        <p class="company-description">
+                            Leading software development company specializing in enterprise solutions, cloud computing, and digital transformation services.
+                        </p>
+                        <div class="company-stats">
+                            <div class="stat">
+                                <div class="stat-number">24</div>
+                                <div class="stat-label">Openings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">156</div>
+                                <div class="stat-label">Hired</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">4.2</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-footer">
+                        <button class="view-openings">
+                            <i class="fas fa-briefcase"></i> View Internship Openings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Company Card 2 -->
+                <div class="company-card">
+                    <div class="company-header">
+                        <div class="company-logo">DA</div>
+                        <h3>DataAnalytics Pro</h3>
+                        <div class="company-industry">Data Science & AI</div>
+                    </div>
+                    <div class="company-details">
+                        <div class="company-info">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Udaipur, Rajasthan</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>100-500 employees</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>www.dataanalyticspro.com</span>
+                            </div>
+                        </div>
+                        <p class="company-description">
+                            Specialized in data analytics, machine learning solutions, and business intelligence for various industry domains.
+                        </p>
+                        <div class="company-stats">
+                            <div class="stat">
+                                <div class="stat-number">18</div>
+                                <div class="stat-label">Openings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">89</div>
+                                <div class="stat-label">Hired</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">4.5</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-footer">
+                        <button class="view-openings">
+                            <i class="fas fa-briefcase"></i> View Internship Openings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Company Card 3 -->
+                <div class="company-card">
+                    <div class="company-header">
+                        <div class="company-logo">IE</div>
+                        <h3>Innovate Engineering</h3>
+                        <div class="company-industry">Engineering & Manufacturing</div>
+                    </div>
+                    <div class="company-details">
+                        <div class="company-info">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Jodhpur, Rajasthan</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>1000+ employees</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>www.innovateeng.com</span>
+                            </div>
+                        </div>
+                        <p class="company-description">
+                            Manufacturing company focused on innovative engineering solutions, automation, and industrial equipment production.
+                        </p>
+                        <div class="company-stats">
+                            <div class="stat">
+                                <div class="stat-number">32</div>
+                                <div class="stat-label">Openings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">234</div>
+                                <div class="stat-label">Hired</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">4.0</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-footer">
+                        <button class="view-openings">
+                            <i class="fas fa-briefcase"></i> View Internship Openings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Company Card 4 -->
+                <div class="company-card">
+                    <div class="company-header">
+                        <div class="company-logo">WD</div>
+                        <h3>WebDev Studios</h3>
+                        <div class="company-industry">Web Development</div>
+                    </div>
+                    <div class="company-details">
+                        <div class="company-info">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Remote / Jaipur</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>50-200 employees</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>www.webdevstudios.com</span>
+                            </div>
+                        </div>
+                        <p class="company-description">
+                            Creative web development agency building modern, responsive websites and web applications for clients worldwide.
+                        </p>
+                        <div class="company-stats">
+                            <div class="stat">
+                                <div class="stat-number">15</div>
+                                <div class="stat-label">Openings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">67</div>
+                                <div class="stat-label">Hired</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">4.3</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-footer">
+                        <button class="view-openings">
+                            <i class="fas fa-briefcase"></i> View Internship Openings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Company Card 5 -->
+                <div class="company-card">
+                    <div class="company-header">
+                        <div class="company-logo">CS</div>
+                        <h3>CloudSystems Ltd.</h3>
+                        <div class="company-industry">Cloud Computing</div>
+                    </div>
+                    <div class="company-details">
+                        <div class="company-info">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Jaipur, Rajasthan</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>200-500 employees</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>www.cloudsystems.com</span>
+                            </div>
+                        </div>
+                        <p class="company-description">
+                            Cloud infrastructure provider offering scalable solutions, DevOps services, and cloud migration expertise.
+                        </p>
+                        <div class="company-stats">
+                            <div class="stat">
+                                <div class="stat-number">12</div>
+                                <div class="stat-label">Openings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">45</div>
+                                <div class="stat-label">Hired</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">4.1</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-footer">
+                        <button class="view-openings">
+                            <i class="fas fa-briefcase"></i> View Internship Openings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Company Card 6 -->
+                <div class="company-card">
+                    <div class="company-header">
+                        <div class="company-logo">MA</div>
+                        <h3>MobileApp Innovations</h3>
+                        <div class="company-industry">Mobile Development</div>
+                    </div>
+                    <div class="company-details">
+                        <div class="company-info">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Remote</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>50-100 employees</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span>www.mobileappinnovations.com</span>
+                            </div>
+                        </div>
+                        <p class="company-description">
+                            Mobile app development company creating innovative iOS and Android applications using cutting-edge technologies.
+                        </p>
+                        <div class="company-stats">
+                            <div class="stat">
+                                <div class="stat-number">8</div>
+                                <div class="stat-label">Openings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">32</div>
+                                <div class="stat-label">Hired</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">4.4</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-footer">
+                        <button class="view-openings">
+                            <i class="fas fa-briefcase"></i> View Internship Openings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-btn">Previous</div>
+                <div class="pagination-btn active">1</div>
+                <div class="pagination-btn">2</div>
+                <div class="pagination-btn">3</div>
+                <div class="pagination-btn">Next</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Companies Section -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Companies</h2>
+            </div>
+            <div class="featured-companies">
+                <div class="featured-company">
+                    <div class="featured-logo">IF</div>
+                    <h4>Infosys</h4>
+                    <p>IT Services</p>
+                </div>
+                <div class="featured-company">
+                    <div class="featured-logo">TCS</div>
+                    <h4>TCS</h4>
+                    <p>Consulting</p>
+                </div>
+                <div class="featured-company">
+                    <div class="featured-logo">WI</div>
+                    <h4>Wipro</h4>
+                    <p>IT Solutions</p>
+                </div>
+                <div class="featured-company">
+                    <div class="featured-logo">AC</div>
+                    <h4>Accenture</h4>
+                    <p>Consulting</p>
+                </div>
+                <div class="featured-company">
+                    <div class="featured-logo">CG</div>
+                    <h4>Capgemini</h4>
+                    <p>Technology</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="internships.html">Internships</a></li>
+                        <li><a href="companies.html">Companies</a></li>
+                        <li><a href="#">Resources</a></li>
+                        <li><a href="help.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Student Resources</h3>
+                    <ul>
+                        <li><a href="register.html">Create Profile</a></li>
+                        <li><a href="#">Resume Builder</a></li>
+                        <li><a href="#">Interview Preparation</a></li>
+                        <li><a href="#">Skill Assessment</a></li>
+                        <li><a href="help.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>For Companies</h3>
+                    <ul>
+                        <li><a href="#">Post Opportunities</a></li>
+                        <li><a href="#">Browse Students</a></li>
+                        <li><a href="#">Campus Recruitment</a></li>
+                        <li><a href="#">Partnership</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Directorate of Technical Education, Rajasthan</li>
+                        <li><i class="fas fa-phone"></i> +91-141-1234567</li>
+                        <li><i class="fas fa-envelope"></i> placement@dterajasthan.in</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Directorate of Technical Education, Rajasthan. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Industry filter functionality
+        document.querySelectorAll('.industry-filter').forEach(filter => {
+            filter.addEventListener('click', function() {
+                document.querySelectorAll('.industry-filter').forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+                
+                const industry = this.textContent;
+                alert(`Filtering by: ${industry}\n\nIn a real application, this would filter the company listings.`);
+            });
+        });
+        
+        // Search functionality
+        document.querySelector('.search-box button').addEventListener('click', function() {
+            const searchTerm = document.querySelector('.search-box input').value;
+            if (searchTerm) {
+                alert(`Searching for: ${searchTerm}\n\nIn a real application, this would search through company listings.`);
+            }
+        });
+        
+        // View openings functionality
+        document.querySelectorAll('.view-openings').forEach(button => {
+            button.addEventListener('click', function() {
+                const companyName = this.closest('.company-card').querySelector('h3').textContent;
+                alert(`Viewing internship openings for: ${companyName}\n\nIn a real application, this would redirect to the company's internship listings.`);
+            });
+        });
+        
+        // Pagination functionality
+        document.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
