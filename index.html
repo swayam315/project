@@ -11,6 +11,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -687,14 +690,15 @@ function solution() {
 
                         <div id="normal-interview-view" class="flex-1 relative glass-panel rounded-2xl bg-black overflow-hidden flex items-center justify-center group">
                             <video id="normal-video" autoplay muted class="w-full h-full object-cover transform scale-x-[-1]"></video>
-                            <div id="normal-video-off" class="flex flex-col items-center text-slate-600 hidden">
-                                <div class="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mb-4">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
-                                        <line x1="1" y1="1" x2="23" y2="23"/>
-                                    </svg>
+                            <div id="normal-video-off" class="w-full h-full flex items-center justify-center bg-slate-900 hidden">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mb-4 mx-auto">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+                                            <line x1="1" y1="1" x2="23" y2="23"/>
+                                        </svg>
+                                    </div>
                                 </div>
-                                <p>Camera Off</p>
                             </div>
                             <div class="absolute bottom-4 left-4 text-white font-medium bg-black/50 px-2 py-1 rounded backdrop-blur-sm">You</div>
                         </div>
@@ -926,6 +930,7 @@ function solution() {
         let currentUser = null;
         let interviewConfig = null;
         let interviewHistory = [];
+        let userStream = null;
 
         // --- UTILITY FUNCTIONS ---
         function showPage(pageId) {
@@ -1299,6 +1304,8 @@ function solution() {
             
             let currentStep = interviewConfig?.company ? 2 : 1;
             let setupData = interviewConfig || { company: null, role: null, round: null, duration: 6 };
+            let cameraTested = false;
+            let micTested = false;
             
             // Render step indicators
             const stepContainer = document.querySelector('#setup-page .flex.justify-between');
@@ -1566,7 +1573,8 @@ function solution() {
                                 
                                 <button 
                                     id="start-interview-btn"
-                                    class="px-12 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-green-500/20 transition hover:scale-105 flex items-center gap-2 mx-auto"
+                                    class="px-12 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-green-500/20 transition hover:scale-105 flex items-center gap-2 mx-auto ${(!cameraTested || !micTested) ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${(!cameraTested || !micTested) ? 'disabled' : ''}
                                 >
                                     Start Interview
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1579,17 +1587,47 @@ function solution() {
                         // Camera test
                         document.getElementById('test-camera-btn').addEventListener('click', function() {
                             const cameraTest = document.getElementById('camera-test');
-                            cameraTest.innerHTML = '<div class="text-green-400">Camera working ✓</div>';
                             
-                            // In a real app, we would access the camera here
+                            // Request camera access
+                            navigator.mediaDevices.getUserMedia({ video: true })
+                                .then(stream => {
+                                    cameraTest.innerHTML = '<video autoplay muted class="w-full h-full object-cover rounded-lg transform scale-x-[-1]"></video>';
+                                    cameraTest.querySelector('video').srcObject = stream;
+                                    cameraTested = true;
+                                    
+                                    // Enable start button if both tests are done
+                                    if (cameraTested && micTested) {
+                                        document.getElementById('start-interview-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                                        document.getElementById('start-interview-btn').disabled = false;
+                                    }
+                                })
+                                .catch(err => {
+                                    cameraTest.innerHTML = '<div class="text-red-400">Camera access denied</div>';
+                                });
                         });
                         
                         // Mic test
                         document.getElementById('test-mic-btn').addEventListener('click', function() {
                             const micTest = document.getElementById('mic-test');
-                            micTest.innerHTML = '<div class="text-green-400">Microphone working ✓</div>';
                             
-                            // In a real app, we would access the microphone here
+                            // Request microphone access
+                            navigator.mediaDevices.getUserMedia({ audio: true })
+                                .then(stream => {
+                                    micTest.innerHTML = '<div class="text-green-400">Microphone working ✓</div>';
+                                    micTested = true;
+                                    
+                                    // Stop the stream
+                                    stream.getTracks().forEach(track => track.stop());
+                                    
+                                    // Enable start button if both tests are done
+                                    if (cameraTested && micTested) {
+                                        document.getElementById('start-interview-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                                        document.getElementById('start-interview-btn').disabled = false;
+                                    }
+                                })
+                                .catch(err => {
+                                    micTest.innerHTML = '<div class="text-red-400">Microphone access denied</div>';
+                                });
                         });
                         
                         document.getElementById('start-interview-btn').addEventListener('click', () => {
@@ -1652,6 +1690,8 @@ function solution() {
             let isSpeaking = false;
             let aiStatus = "speaking"; 
             let currentQuestion = "Initializing...";
+            let micOn = true;
+            let cameraOn = true;
             
             document.getElementById('current-question').textContent = `"${currentQuestion}"`;
             document.getElementById('total-timer').textContent = `Total: ${formatTime(timeLeft)}`;
@@ -1691,15 +1731,28 @@ function solution() {
                 }, 1000);
             }
             
-            // Initialize camera
+            // Initialize camera and microphone
             const userVideo = document.getElementById('user-video');
             const normalVideo = document.getElementById('normal-video');
-            let videoOn = true;
             
-            // Mock camera access for demo
-            document.getElementById('video-off-indicator').classList.remove('hidden');
-            document.getElementById('normal-video-off').classList.remove('hidden');
-            videoOn = false;
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    userStream = stream;
+                    userVideo.srcObject = stream;
+                    normalVideo.srcObject = stream;
+                    
+                    // Initially show camera feed
+                    document.getElementById('normal-video-off').classList.add('hidden');
+                    document.getElementById('video-off-indicator').classList.add('hidden');
+                })
+                .catch(err => {
+                    console.log("Camera/mic access denied");
+                    // Show video off indicators
+                    document.getElementById('video-off-indicator').classList.remove('hidden');
+                    document.getElementById('normal-video-off').classList.remove('hidden');
+                    cameraOn = false;
+                    micOn = false;
+                });
             
             // Generate initial question
             setTimeout(() => {
@@ -1711,60 +1764,72 @@ function solution() {
             
             // Control buttons
             document.getElementById('mic-toggle').addEventListener('click', function() {
-                const isOn = this.classList.contains('bg-slate-800');
-                if (isOn) {
-                    this.classList.remove('bg-slate-800', 'hover:bg-slate-700');
-                    this.classList.add('bg-red-500', 'hover:bg-red-600');
-                    this.innerHTML = `
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="1" y1="1" x2="23" y2="23"/>
-                            <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
-                        </svg>
-                    `;
-                } else {
-                    this.classList.remove('bg-red-500', 'hover:bg-red-600');
-                    this.classList.add('bg-slate-800', 'hover:bg-slate-700');
-                    this.innerHTML = `
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                            <line x1="12" y1="19" x2="12" y2="23"/>
-                            <line x1="8" y1="23" x2="16" y2="23"/>
-                        </svg>
-                    `;
+                if (userStream) {
+                    const audioTracks = userStream.getAudioTracks();
+                    if (audioTracks.length > 0) {
+                        audioTracks[0].enabled = !audioTracks[0].enabled;
+                        micOn = audioTracks[0].enabled;
+                        
+                        if (micOn) {
+                            this.classList.remove('bg-red-500', 'hover:bg-red-600');
+                            this.classList.add('bg-slate-800', 'hover:bg-slate-700');
+                            this.innerHTML = `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                    <line x1="12" y1="19" x2="12" y2="23"/>
+                                    <line x1="8" y1="23" x2="16" y2="23"/>
+                                </svg>
+                            `;
+                        } else {
+                            this.classList.remove('bg-slate-800', 'hover:bg-slate-700');
+                            this.classList.add('bg-red-500', 'hover:bg-red-600');
+                            this.innerHTML = `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                    <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+                                </svg>
+                            `;
+                        }
+                    }
                 }
             });
             
             document.getElementById('video-toggle').addEventListener('click', function() {
-                const isOn = this.classList.contains('bg-slate-800');
-                if (isOn) {
-                    this.classList.remove('bg-slate-800', 'hover:bg-slate-700');
-                    this.classList.add('bg-red-500', 'hover:bg-red-600');
-                    this.innerHTML = `
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
-                            <line x1="1" y1="1" x2="23" y2="23"/>
-                        </svg>
-                    `;
-                    
-                    // Hide video feeds
-                    document.getElementById('video-off-indicator').classList.remove('hidden');
-                    document.getElementById('normal-video-off').classList.remove('hidden');
-                    videoOn = false;
-                } else {
-                    this.classList.remove('bg-red-500', 'hover:bg-red-600');
-                    this.classList.add('bg-slate-800', 'hover:bg-slate-700');
-                    this.innerHTML = `
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="23 7 16 12 23 17 23 7"/>
-                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                        </svg>
-                    `;
-                    
-                    // Show video feeds
-                    document.getElementById('video-off-indicator').classList.add('hidden');
-                    document.getElementById('normal-video-off').classList.add('hidden');
-                    videoOn = true;
+                if (userStream) {
+                    const videoTracks = userStream.getVideoTracks();
+                    if (videoTracks.length > 0) {
+                        videoTracks[0].enabled = !videoTracks[0].enabled;
+                        cameraOn = videoTracks[0].enabled;
+                        
+                        if (cameraOn) {
+                            this.classList.remove('bg-red-500', 'hover:bg-red-600');
+                            this.classList.add('bg-slate-800', 'hover:bg-slate-700');
+                            this.innerHTML = `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="23 7 16 12 23 17 23 7"/>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                </svg>
+                            `;
+                            
+                            // Show video feeds
+                            document.getElementById('video-off-indicator').classList.add('hidden');
+                            document.getElementById('normal-video-off').classList.add('hidden');
+                        } else {
+                            this.classList.remove('bg-slate-800', 'hover:bg-slate-700');
+                            this.classList.add('bg-red-500', 'hover:bg-red-600');
+                            this.innerHTML = `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            `;
+                            
+                            // Hide video feeds
+                            document.getElementById('video-off-indicator').classList.remove('hidden');
+                            document.getElementById('normal-video-off').classList.remove('hidden');
+                        }
+                    }
                 }
             });
             
@@ -1823,6 +1888,12 @@ function solution() {
             document.getElementById('end-interview-btn').addEventListener('click', () => {
                 clearInterval(totalTimer);
                 if (taskTimer) clearInterval(taskTimer);
+                
+                // Stop camera and microphone
+                if (userStream) {
+                    userStream.getTracks().forEach(track => track.stop());
+                }
+                
                 finishInterview();
             });
             
@@ -2044,7 +2115,7 @@ function solution() {
             });
             
             document.getElementById('download-pdf-btn').addEventListener('click', () => {
-                alert('PDF download functionality would be implemented here with a library like jsPDF');
+                generatePDF();
             });
             
             document.getElementById('copy-plan-btn').addEventListener('click', () => {
@@ -2058,6 +2129,63 @@ function solution() {
                         console.error('Failed to copy: ', err);
                     });
             });
+
+            // PDF Generation Function
+            function generatePDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(20);
+                doc.setTextColor(40, 40, 40);
+                doc.text('MockAI Interview Performance Report', 20, 30);
+                
+                // Add company and role info
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Company: ${interviewConfig.company.name}`, 20, 50);
+                doc.text(`Role: ${interviewConfig.role.title}`, 20, 60);
+                doc.text(`Round: ${interviewConfig.round.title}`, 20, 70);
+                doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 80);
+                
+                // Add score
+                doc.setFontSize(16);
+                doc.setTextColor(40, 40, 40);
+                doc.text('Overall Score: 85/100', 20, 100);
+                
+                // Add strengths section
+                doc.setFontSize(14);
+                doc.setTextColor(30, 130, 76); // Green
+                doc.text('Strengths:', 20, 120);
+                doc.setFontSize(10);
+                doc.setTextColor(40, 40, 40);
+                doc.text('- Strong understanding of core concepts', 25, 130);
+                doc.text('- Clear communication using the STAR method', 25, 137);
+                doc.text('- Good problem-solving approach', 25, 144);
+                
+                // Add improvements section
+                doc.setFontSize(14);
+                doc.setTextColor(217, 119, 6); // Yellow/Orange
+                doc.text('Areas to Improve:', 20, 160);
+                doc.setFontSize(10);
+                doc.setTextColor(40, 40, 40);
+                doc.text('- Deepen knowledge on core concepts', 25, 170);
+                doc.text('- Reduce use of filler words ("um", "uh")', 25, 177);
+                doc.text('- Practice more coding problems to improve speed', 25, 184);
+                
+                // Add recommendations
+                doc.setFontSize(14);
+                doc.setTextColor(59, 130, 246); // Blue
+                doc.text('Recommended Actions:', 20, 200);
+                doc.setFontSize(10);
+                doc.setTextColor(40, 40, 40);
+                doc.text('- Practice 2-3 coding problems daily', 25, 210);
+                doc.text('- Record yourself answering behavioral questions', 25, 217);
+                doc.text('- Study system design patterns', 25, 224);
+                
+                // Save the PDF
+                doc.save(`MockAI-${interviewConfig.company.name}-${interviewConfig.role.title}-Report.pdf`);
+            }
         }
 
         // --- PROFILE PHOTO MODAL FUNCTIONALITY ---
