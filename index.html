@@ -143,7 +143,7 @@
                     <div class="flex items-center gap-2 font-bold text-2xl tracking-tighter">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/>
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21Z"/>
                                 <path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>
                             </svg>
                         </div>
@@ -876,6 +876,11 @@ function solution() {
             { id: 'tech2', title: 'Technical Round 2', agent: 'System Design Agent', desc: 'Architecture & Scale', isTech: true, duration: 20 },
         ];
 
+        // --- USER CREDENTIALS ---
+        const USER_CREDENTIALS = {
+            'admin@mockai.com': { password: 'admin', name: 'Admin User', username: 'admin' }
+        };
+
         // --- MOCK BACKEND SERVICE ---
         const MockBackend = {
             generateQuestion: (company, role, round) => {
@@ -915,6 +920,7 @@ function solution() {
         const USER_KEY = 'mockAI_user';
         const INTERVIEW_CONFIG_KEY = 'mockAI_interviewConfig';
         const HISTORY_KEY = 'mockAI_history';
+        const LOGIN_STATE_KEY = 'mockAI_loginState';
 
         // --- APP STATE ---
         let currentUser = null;
@@ -955,24 +961,14 @@ function solution() {
         // --- AUTHENTICATION ---
         function initAuth() {
             // Check if user is logged in
-            currentUser = Storage.get(USER_KEY);
-            interviewHistory = Storage.get(HISTORY_KEY) || [];
-            
-            updateNavbar();
-            
-            // Set up default user if none exists
-            if (!currentUser) {
-                const defaultUser = {
-                    name: 'Admin User',
-                    username: 'admin',
-                    email: 'admin@mockai.com',
-                    status: 'student',
-                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-                    joined: new Date().toISOString()
-                };
-                Storage.set(USER_KEY, defaultUser);
-                currentUser = defaultUser;
+            const loginState = Storage.get(LOGIN_STATE_KEY);
+            if (loginState && loginState.isLoggedIn) {
+                currentUser = Storage.get(USER_KEY);
+                interviewHistory = Storage.get(HISTORY_KEY) || [];
                 updateNavbar();
+            } else {
+                // Redirect to login if not logged in
+                showPage('auth-page');
             }
             
             // Login form
@@ -982,16 +978,17 @@ function solution() {
                 const password = document.getElementById('login-password').value;
                 const errorDiv = document.getElementById('login-error');
                 
-                if (email === 'admin@mockai.com' && password === 'admin') {
+                if (USER_CREDENTIALS[email] && USER_CREDENTIALS[email].password === password) {
                     const user = {
-                        name: 'Admin User',
-                        username: 'admin',
-                        email: 'admin@mockai.com',
+                        name: USER_CREDENTIALS[email].name,
+                        username: USER_CREDENTIALS[email].username,
+                        email: email,
                         status: 'student',
                         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
                         joined: new Date().toISOString()
                     };
                     Storage.set(USER_KEY, user);
+                    Storage.set(LOGIN_STATE_KEY, { isLoggedIn: true });
                     currentUser = user;
                     updateNavbar();
                     showPage('landing-page');
@@ -1020,6 +1017,7 @@ function solution() {
                         joined: new Date().toISOString()
                     };
                     Storage.set(USER_KEY, user);
+                    Storage.set(LOGIN_STATE_KEY, { isLoggedIn: true });
                     currentUser = user;
                     updateNavbar();
                     
@@ -1081,9 +1079,10 @@ function solution() {
             document.getElementById('logout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 Storage.remove(USER_KEY);
+                Storage.remove(LOGIN_STATE_KEY);
                 currentUser = null;
                 updateNavbar();
-                showPage('landing-page');
+                showPage('auth-page');
             });
             
             // Profile dropdown
@@ -1295,18 +1294,17 @@ function solution() {
                 { num: 1, label: "Company" },
                 { num: 2, label: "Role" },
                 { num: 3, label: "Round" },
-                { num: 4, label: "Resume" },
-                { num: 5, label: "Details" }
+                { num: 4, label: "Details" }
             ];
             
             let currentStep = interviewConfig?.company ? 2 : 1;
-            let setupData = interviewConfig || { company: null, role: null, round: null, resume: null, duration: 6 };
+            let setupData = interviewConfig || { company: null, role: null, round: null, duration: 6 };
             
             // Render step indicators
             const stepContainer = document.querySelector('#setup-page .flex.justify-between');
             stepContainer.innerHTML = `
                 <div class="absolute left-0 top-1/2 w-full h-1 bg-slate-800 -z-10 rounded-full"></div>
-                <div id="step-progress" class="absolute left-0 top-1/2 h-1 bg-blue-500 -z-10 rounded-full transition-all duration-500" style="width: ${((currentStep-1)/4)*100}%"></div>
+                <div id="step-progress" class="absolute left-0 top-1/2 h-1 bg-blue-500 -z-10 rounded-full transition-all duration-500" style="width: ${((currentStep-1)/3)*100}%"></div>
             `;
             
             steps.forEach((step, idx) => {
@@ -1341,7 +1339,7 @@ function solution() {
             });
             
             function updateStepProgress() {
-                document.getElementById('step-progress').style.width = `${((currentStep-1)/4)*100}%`;
+                document.getElementById('step-progress').style.width = `${((currentStep-1)/3)*100}%`;
                 
                 // Update step indicators
                 const stepIndicators = document.querySelectorAll('#setup-page .flex.flex-col.items-center');
@@ -1489,104 +1487,8 @@ function solution() {
                     case 4:
                         stepContent.innerHTML = `
                             <div class="animate-enter text-center">
-                                <h2 class="text-3xl font-bold mb-2">Upload Resume</h2>
-                                <p class="text-slate-400 mb-8">The ${setupData.round.agent} will analyze your background.</p>
-                                
-                                <div id="resume-upload" class="max-w-xl mx-auto h-64 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-4 transition cursor-pointer relative overflow-hidden border-slate-700 bg-slate-900/50 hover:border-slate-500">
-                                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" id="resume-file" />
-                                    
-                                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center text-blue-400">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="17 8 12 3 7 8"/>
-                                            <line x1="12" y1="3" x2="12" y2="15"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-lg">Click or Drag Resume Here</p>
-                                        <p class="text-sm text-slate-500">PDF, DOCX up to 10MB</p>
-                                    </div>
-                                </div>
-                                
-                                <div id="resume-processing" class="hidden h-64 flex flex-col items-center justify-center gap-4">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 animate-spin-slow">
-                                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-                                    </svg>
-                                    <div class="text-lg font-bold animate-pulse">Scanning Resume...</div>
-                                    <div class="text-sm text-slate-400">Extracting keywords for ${setupData.round.title}</div>
-                                </div>
-                                
-                                <div id="resume-success" class="hidden h-64 flex flex-col items-center justify-center text-green-400">
-                                    <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-2">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </div>
-                                    <span class="font-bold text-lg" id="resume-name"></span>
-                                    <span class="text-sm">Uploaded Successfully</span>
-                                </div>
-                            </div>
-                        `;
-                        
-                        const resumeUpload = document.getElementById('resume-upload');
-                        const resumeFile = document.getElementById('resume-file');
-                        const resumeProcessing = document.getElementById('resume-processing');
-                        const resumeSuccess = document.getElementById('resume-success');
-                        const resumeName = document.getElementById('resume-name');
-                        
-                        let isDragging = false;
-                        
-                        resumeUpload.addEventListener('dragover', (e) => {
-                            e.preventDefault();
-                            isDragging = true;
-                            resumeUpload.classList.add('border-blue-500', 'bg-blue-500/10');
-                        });
-                        
-                        resumeUpload.addEventListener('dragleave', () => {
-                            isDragging = false;
-                            resumeUpload.classList.remove('border-blue-500', 'bg-blue-500/10');
-                        });
-                        
-                        resumeUpload.addEventListener('drop', (e) => {
-                            e.preventDefault();
-                            isDragging = false;
-                            resumeUpload.classList.remove('border-blue-500', 'bg-blue-500/10');
-                            
-                            if(e.dataTransfer.files[0]) {
-                                handleResumeUpload(e.dataTransfer.files[0]);
-                            }
-                        });
-                        
-                        resumeFile.addEventListener('change', (e) => {
-                            if(e.target.files[0]) {
-                                handleResumeUpload(e.target.files[0]);
-                            }
-                        });
-                        
-                        function handleResumeUpload(file) {
-                            setupData.resume = file.name;
-                            resumeUpload.classList.add('hidden');
-                            resumeProcessing.classList.remove('hidden');
-                            
-                            setTimeout(() => {
-                                resumeProcessing.classList.add('hidden');
-                                resumeSuccess.classList.remove('hidden');
-                                resumeName.textContent = file.name;
-                                
-                                // Automatically proceed to details step after resume processing
-                                setTimeout(() => {
-                                    currentStep = 5;
-                                    updateStepProgress();
-                                    renderStep(5);
-                                }, 1500);
-                            }, 1500);
-                        }
-                        break;
-                        
-                    case 5:
-                        stepContent.innerHTML = `
-                            <div class="animate-enter text-center">
-                                <h2 class="text-3xl font-bold mb-6">Interview Details</h2>
+                                <h2 class="text-3xl font-bold mb-2">Interview Details</h2>
+                                <p class="text-slate-400 mb-8">Check your setup and confirm interview details.</p>
                                 
                                 <div class="max-w-md mx-auto bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8 text-left">
                                     <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-700">
@@ -1640,6 +1542,28 @@ function solution() {
                                     ` : ''}
                                 </div>
                                 
+                                <div class="max-w-md mx-auto mb-8">
+                                    <h3 class="text-lg font-bold mb-4 text-left">Test Your Setup</h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="glass-card p-4 rounded-xl text-center">
+                                            <div id="camera-test" class="w-full h-32 bg-slate-800 rounded-lg mb-2 flex items-center justify-center">
+                                                <div class="text-slate-500">Camera Test</div>
+                                            </div>
+                                            <button id="test-camera-btn" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition">
+                                                Test Camera
+                                            </button>
+                                        </div>
+                                        <div class="glass-card p-4 rounded-xl text-center">
+                                            <div id="mic-test" class="w-full h-32 bg-slate-800 rounded-lg mb-2 flex items-center justify-center">
+                                                <div class="text-slate-500">Microphone Test</div>
+                                            </div>
+                                            <button id="test-mic-btn" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition">
+                                                Test Microphone
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <button 
                                     id="start-interview-btn"
                                     class="px-12 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-green-500/20 transition hover:scale-105 flex items-center gap-2 mx-auto"
@@ -1651,6 +1575,22 @@ function solution() {
                                 </button>
                             </div>
                         `;
+                        
+                        // Camera test
+                        document.getElementById('test-camera-btn').addEventListener('click', function() {
+                            const cameraTest = document.getElementById('camera-test');
+                            cameraTest.innerHTML = '<div class="text-green-400">Camera working ✓</div>';
+                            
+                            // In a real app, we would access the camera here
+                        });
+                        
+                        // Mic test
+                        document.getElementById('test-mic-btn').addEventListener('click', function() {
+                            const micTest = document.getElementById('mic-test');
+                            micTest.innerHTML = '<div class="text-green-400">Microphone working ✓</div>';
+                            
+                            // In a real app, we would access the microphone here
+                        });
                         
                         document.getElementById('start-interview-btn').addEventListener('click', () => {
                             Storage.set(INTERVIEW_CONFIG_KEY, setupData);
@@ -1756,18 +1696,10 @@ function solution() {
             const normalVideo = document.getElementById('normal-video');
             let videoOn = true;
             
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                .then(stream => {
-                    userVideo.srcObject = stream;
-                    normalVideo.srcObject = stream;
-                })
-                .catch(err => {
-                    console.log("Camera mock mode");
-                    // Show video off indicators
-                    document.getElementById('video-off-indicator').classList.remove('hidden');
-                    document.getElementById('normal-video-off').classList.remove('hidden');
-                    videoOn = false;
-                });
+            // Mock camera access for demo
+            document.getElementById('video-off-indicator').classList.remove('hidden');
+            document.getElementById('normal-video-off').classList.remove('hidden');
+            videoOn = false;
             
             // Generate initial question
             setTimeout(() => {
@@ -2165,30 +2097,15 @@ function solution() {
                 const cameraContainer = document.getElementById('camera-container');
                 cameraContainer.classList.remove('hidden');
                 
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(stream) {
-                        const preview = document.getElementById('camera-preview');
-                        preview.srcObject = stream;
-                    })
-                    .catch(function(err) {
-                        console.error('Error accessing camera: ', err);
-                        alert('Unable to access camera. Please try uploading a photo instead.');
-                    });
+                // In a real app, we would access the camera here
+                // For demo purposes, we'll just show a placeholder
+                document.getElementById('camera-preview').innerHTML = '<div class="text-center p-8">Camera preview would appear here</div>';
             });
             
             document.getElementById('capture-photo').addEventListener('click', function() {
-                const preview = document.getElementById('camera-preview');
-                const canvas = document.createElement('canvas');
-                canvas.width = preview.videoWidth;
-                canvas.height = preview.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(preview, 0, 0);
-                
-                // Stop camera stream
-                preview.srcObject.getTracks().forEach(track => track.stop());
-                
-                // Update user avatar
-                currentUser.avatar = canvas.toDataURL('image/png');
+                // In a real app, we would capture the photo from the camera
+                // For demo, we'll just use a placeholder
+                currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + currentUser.username;
                 Storage.set(USER_KEY, currentUser);
                 updateNavbar();
                 
@@ -2226,30 +2143,15 @@ function solution() {
                 const cameraContainer = document.getElementById('change-camera-container');
                 cameraContainer.classList.remove('hidden');
                 
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(stream) {
-                        const preview = document.getElementById('change-camera-preview');
-                        preview.srcObject = stream;
-                    })
-                    .catch(function(err) {
-                        console.error('Error accessing camera: ', err);
-                        alert('Unable to access camera. Please try uploading a photo instead.');
-                    });
+                // In a real app, we would access the camera here
+                // For demo purposes, we'll just show a placeholder
+                document.getElementById('change-camera-preview').innerHTML = '<div class="text-center p-8">Camera preview would appear here</div>';
             });
             
             document.getElementById('change-capture-photo').addEventListener('click', function() {
-                const preview = document.getElementById('change-camera-preview');
-                const canvas = document.createElement('canvas');
-                canvas.width = preview.videoWidth;
-                canvas.height = preview.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(preview, 0, 0);
-                
-                // Stop camera stream
-                preview.srcObject.getTracks().forEach(track => track.stop());
-                
-                // Update user avatar
-                currentUser.avatar = canvas.toDataURL('image/png');
+                // In a real app, we would capture the photo from the camera
+                // For demo, we'll just use a placeholder
+                currentUser.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + currentUser.username;
                 Storage.set(USER_KEY, currentUser);
                 updateNavbar();
                 document.getElementById('profile-avatar').src = currentUser.avatar;
