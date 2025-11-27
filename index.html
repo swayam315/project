@@ -21,6 +21,7 @@
             color: white;
             overflow-x: hidden;
             margin: 0;
+            min-height: 100vh;
         }
 
         /* Glassmorphism Classes */
@@ -99,6 +100,8 @@
         /* Page Transitions */
         .page {
             display: none;
+            width: 100%;
+            min-height: 100vh;
         }
         .page.active {
             display: block;
@@ -132,220 +135,45 @@
             object-fit: contain;
             border-radius: 10px;
         }
+
+        /* Footer Fix: Ensure no extra white space below */
+        #landing-page-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        footer {
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- Landing Page -->
-        <div id="landing-page" class="page active">
-            <div class="min-h-screen relative flex flex-col">
-                <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
-                <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
-
-                <nav class="z-10 px-8 py-6 flex justify-between items-center glass-panel mx-4 mt-4 rounded-2xl">
-                    <div class="flex items-center gap-2 font-bold text-2xl tracking-tighter">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21Z"/>
-                                <path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>
-                            </svg>
-                        </div>
-                        Mock<span class="text-blue-400">AI</span>
-                    </div>
-                    
-                    <div id="nav-auth" class="flex gap-4">
-                        <button id="login-btn" class="px-5 py-2 text-slate-300 hover:text-white font-medium">Login</button>
-                        <button id="get-started-btn" class="px-5 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                            Get Started
-                        </button>
-                    </div>
-                    
-                    <div id="nav-user" class="hidden flex items-center gap-6">
-                        <a href="#" class="text-slate-300 hover:text-white font-medium transition">Home</a>
-                        <a href="#" class="text-slate-300 hover:text-white font-medium transition">Features</a>
-                        <div class="flex items-center gap-2 pl-6 border-l border-white/10">
-                            <div id="profile-dropdown" class="relative">
-                                <button id="profile-btn" class="flex items-center gap-2">
-                                    <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="w-8 h-8 rounded-full border border-blue-500/50" />
-                                    <span id="user-name" class="font-medium">Admin User</span>
-                                </button>
-                                <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 glass-panel rounded-xl py-2 hidden z-50">
-                                    <a href="#" id="view-profile" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/5">View Profile</a>
-                                    <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-400 hover:bg-white/5">Logout</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-
-                <main class="flex-1 flex flex-col items-center justify-center text-center px-4 relative z-10 mt-12 mb-12">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs font-bold mb-6 animate-pulse">
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        New: DeepSeek & OpenAI Agents Added
-                    </div>
-                    
-                    <h1 class="text-5xl md:text-7xl font-bold mb-6 max-w-5xl leading-[1.1] tracking-tight">
-                        Master Your Next Interview with <br class="hidden md:block"/>
-                        <span class="text-gradient">AI Simulation</span>
-                    </h1>
-                    
-                    <p class="text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
-                        Practice real company-specific interviews with intelligent AI Agents. Get real-time feedback on technical skills, voice modulation, and body language.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16">
-                        <button id="start-simulation-btn" class="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
-                            Start Free Simulation
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition">
-                                <polyline points="9 18 15 12 9 6"/>
-                            </svg>
-                        </button>
-                        <button id="demo-btn" class="px-8 py-4 glass-panel rounded-xl font-bold text-lg hover:bg-white/5 transition flex items-center justify-center gap-2">
-                            <div class="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-0.5 fill-white">
-                                    <polygon points="5 3 19 12 5 21 5 3"/>
-                                </svg>
-                            </div>
-                            View Demo
-                        </button>
-                    </div>
-                </main>
-
-                <!-- Marquee -->
-                <div class="w-full py-8 border-y border-white/5 bg-black/20 backdrop-blur-sm mb-12">
-                    <div class="marquee-wrapper">
-                        <div class="marquee-content gap-16 px-8">
-                            <!-- Marquee content will be populated by JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Company Selection Grid -->
-                <div class="max-w-6xl mx-auto px-4 pb-20 w-full animate-enter border-b border-white/5 mb-12">
-                    <div class="text-center mb-10">
-                        <h2 class="text-3xl font-bold mb-4">Select a Company to Interview</h2>
-                        <p class="text-slate-400">Choose your target and start practicing immediately.</p>
-                    </div>
-                    <div id="company-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        <!-- Company buttons will be populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Our Story Section -->
-                <div class="max-w-6xl mx-auto px-4 pb-20 animate-enter">
-                    <div class="flex flex-col md:flex-row items-center gap-12">
-                        <div class="flex-1">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-bold mb-6">
-                                OUR MISSION
-                            </div>
-                            <h2 class="text-3xl md:text-4xl font-bold mb-6">Why We Built MockAI</h2>
-                            <p class="text-slate-400 text-lg leading-relaxed">
-                                The idea for MockAI was born from a shared struggle: the anxiety of the empty interview room. We realized that while technical skills are taught, the art of interviewing—handling pressure, articulation, and body language—is often left to chance. 
-                                <br/><br/>
-                                Our mission is to democratize interview preparation, providing a safe, intelligent space for candidates to fail, learn, and eventually succeed. We believe everyone deserves the chance to tell their story with confidence. We're building the future of interview preparation, where AI doesn't just test you, but truly understands and helps you improve your communication, problem-solving, and presentation skills.
-                            </p>
-                        </div>
-                        <div class="flex-1">
-                            <img src="mission.jpeg" alt="Our Mission" class="w-full h-80 object-cover rounded-2xl" onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80'" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Meet The Team Section -->
-                <div class="max-w-6xl mx-auto px-4 pb-20 animate-enter">
-                    <h2 class="text-3xl font-bold mb-12 text-center">Meet Our Team</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div class="flex flex-col items-center text-center group">
-                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
-                                <img src="img1.jpg" alt="The Backend Guy" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=1'" />
-                            </div>
-                            <h3 class="font-bold text-white text-lg">The Backend Guy</h3>
-                        </div>
-                        <div class="flex flex-col items-center text-center group">
-                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
-                                <img src="img2.jpg" alt="Product Design & Content Architect" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=2'" />
-                            </div>
-                            <h3 class="font-bold text-white text-lg">Product Design & Content Architect</h3>
-                        </div>
-                        <div class="flex flex-col items-center text-center group">
-                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
-                                <img src="img3.jpg" alt="AI Enthusiast" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=3'" />
-                            </div>
-                            <h3 class="font-bold text-white text-lg">AI Enthusiast</h3>
-                        </div>
-                        <div class="flex flex-col items-center text-center group">
-                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
-                                <img src="img4.jpg" alt="The Frontend Geek" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=4'" />
-                            </div>
-                            <h3 class="font-bold text-white text-lg">The Frontend Geek</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <footer class="w-full py-12 border-t border-white/5 bg-black/40">
-                    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between gap-10">
-                        
-                        <!-- Contact Us -->
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                                Contact Us
-                            </h3>
-                            <div class="flex gap-4">
-                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-green-600 hover:text-white hover:-translate-y-1">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-black hover:text-white hover:-translate-y-1">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-12.7 12.5S1.2 13 3 12c-2-.2-3.5-1.5-3.5-3 3 1 6 1 6 1-2-1.5-2.5-5-1-7 3 3.5 7.5 5.5 11.5 5.5 0-4.5 6-5 7.5-1.5"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-blue-700 hover:text-white hover:-translate-y-1">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-                                        <rect x="2" y="9" width="4" height="12"/>
-                                        <circle cx="4" cy="4" r="2"/>
-                                    </svg>
-                                </a>
-                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-red-600 hover:text-white hover:-translate-y-1">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                        <polyline points="22,6 12,13 2,6"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Founders -->
-                        <div class="text-left md:text-right">
-                            <h3 class="text-xl font-bold text-white mb-6">Founders of MockAI</h3>
-                            <ul class="space-y-2 text-slate-400">
-                                <li class="hover:text-blue-400 transition cursor-pointer">Omkar S</li>
-                                <li class="hover:text-blue-400 transition cursor-pointer">Swayam K</li>
-                                <li class="hover:text-blue-400 transition cursor-pointer">Sarthak C</li>
-                                <li class="hover:text-blue-400 transition cursor-pointer">Akash I</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center mt-12 text-slate-600 text-sm">
-                        © 2025 MockAI Platform. All rights reserved.
-                    </div>
-                </footer>
-            </div>
-        </div>
-
-        <!-- Login/Signup Page -->
+        <!-- Login/Signup Page (NOT ACTIVE BY DEFAULT) -->
         <div id="auth-page" class="page">
-            <div class="min-h-screen flex items-center justify-center relative p-4">
+            <div class="min-h-screen flex items-center justify-center relative p-4 overflow-hidden">
                 <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-[#020617] to-[#020617] -z-10"></div>
-                <button id="auth-back-btn" class="absolute top-6 left-6 text-slate-400 hover:text-white flex items-center gap-2">
+                
+                <!-- Logo -->
+                <div class="absolute top-6 left-6 flex items-center gap-2 font-bold text-2xl tracking-tighter text-white/50">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500/50 to-purple-600/50 flex items-center justify-center grayscale opacity-70">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21Z"/>
+                            <path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>
+                        </svg>
+                    </div>
+                    MockAI
+                </div>
+
+                <!-- Back to Home Button -->
+                <button id="auth-back-btn" class="absolute top-6 right-6 text-slate-400 hover:text-white flex items-center gap-2 transition z-20">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"/>
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
-                    Back to Home
+                    <span class="hidden md:inline">Close</span>
                 </button>
 
                 <div class="w-full max-w-md glass-panel p-8 rounded-2xl animate-enter">
@@ -451,6 +279,206 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+
+        <!-- Landing Page (Index) - ACTIVE BY DEFAULT -->
+        <div id="landing-page" class="page active">
+            <div id="landing-page-wrapper">
+                <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+                <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+                <nav class="z-10 px-8 py-6 flex justify-between items-center glass-panel mx-4 mt-4 rounded-2xl">
+                    <div class="flex items-center gap-2 font-bold text-2xl tracking-tighter">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21Z"/>
+                                <path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>
+                            </svg>
+                        </div>
+                        Mock<span class="text-blue-400">AI</span>
+                    </div>
+                    
+                    <div id="nav-auth" class="flex gap-4">
+                        <!-- Login buttons VISIBLE on Landing Page -->
+                        <button id="nav-login-btn" class="text-slate-300 hover:text-white font-medium transition">Login</button>
+                        <button id="nav-signup-btn" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition shadow-lg shadow-blue-500/20">Sign Up</button>
+                    </div>
+                    
+                    <div id="nav-user" class="hidden flex items-center gap-6">
+                        <a href="#" class="text-slate-300 hover:text-white font-medium transition">Home</a>
+                        <a href="#" class="text-slate-300 hover:text-white font-medium transition">Features</a>
+                        <div class="flex items-center gap-2 pl-6 border-l border-white/10">
+                            <div id="profile-dropdown" class="relative">
+                                <button id="profile-btn" class="flex items-center gap-2">
+                                    <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="w-8 h-8 rounded-full border border-blue-500/50" />
+                                    <span id="user-name" class="font-medium">Admin User</span>
+                                </button>
+                                <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 glass-panel rounded-xl py-2 hidden z-50">
+                                    <a href="#" id="view-profile" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/5">View Profile</a>
+                                    <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-400 hover:bg-white/5">Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <main class="flex-1 flex flex-col items-center justify-center text-center px-4 relative z-10 mt-12 mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs font-bold mb-6 animate-pulse">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        New: DeepSeek & OpenAI Agents Added
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-7xl font-bold mb-6 max-w-5xl leading-[1.1] tracking-tight">
+                        Master Your Next Interview with <br class="hidden md:block"/>
+                        <span class="text-gradient">AI Simulation</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
+                        Practice real company-specific interviews with intelligent AI Agents. Get real-time feedback on technical skills, voice modulation, and body language.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16">
+                        <button id="start-simulation-btn" class="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
+                            Start Free Simulation
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                        <button id="demo-btn" class="px-8 py-4 glass-panel rounded-xl font-bold text-lg hover:bg-white/5 transition flex items-center justify-center gap-2">
+                            <div class="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-0.5 fill-white">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                            </div>
+                            View Demo
+                        </button>
+                    </div>
+                </main>
+
+                <!-- Marquee -->
+                <div class="w-full py-8 border-y border-white/5 bg-black/20 backdrop-blur-sm mb-12">
+                    <div class="marquee-wrapper">
+                        <div class="marquee-content gap-16 px-8">
+                            <!-- Marquee content will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Selection Grid -->
+                <div class="max-w-6xl mx-auto px-4 w-full animate-enter border-b border-white/5 mb-12 pb-12">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold mb-4">Select a Company to Interview</h2>
+                        <p class="text-slate-400">Choose your target and start practicing immediately.</p>
+                    </div>
+                    <div id="company-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <!-- Company buttons will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Our Story Section -->
+                <div class="max-w-6xl mx-auto px-4 pb-12 animate-enter">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="flex-1">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-bold mb-6">
+                                OUR MISSION
+                            </div>
+                            <h2 class="text-3xl md:text-4xl font-bold mb-6">Why We Built MockAI</h2>
+                            <p class="text-slate-400 text-lg leading-relaxed">
+                                The idea for MockAI was born from a shared struggle: the anxiety of the empty interview room. We realized that while technical skills are taught, the art of interviewing—handling pressure, articulation, and body language—is often left to chance. 
+                                <br/><br/>
+                                Our mission is to democratize interview preparation, providing a safe, intelligent space for candidates to fail, learn, and eventually succeed. We believe everyone deserves the chance to tell their story with confidence.
+                            </p>
+                        </div>
+                        <div class="flex-1">
+                            <img src="mission.jpeg" alt="Our Mission" class="w-full h-80 object-cover rounded-2xl" onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80'" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meet The Team Section -->
+                <div class="max-w-6xl mx-auto px-4 pb-12 animate-enter">
+                    <h2 class="text-3xl font-bold mb-12 text-center">Meet Our Team</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img1.jpg" alt="The Backend Guy" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=1'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">The Backend Guy</h3>
+                        </div>
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img2.jpg" alt="Product Design & Content Architect" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=2'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">Product Design</h3>
+                        </div>
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img3.jpg" alt="AI Enthusiast" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=3'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">AI Enthusiast</h3>
+                        </div>
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img4.jpg" alt="The Frontend Geek" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=4'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">The Frontend Geek</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="w-full py-12 border-t border-white/5 bg-black/40 mt-auto">
+                    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between gap-10">
+                        
+                        <!-- Contact Us -->
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                                Contact Us
+                            </h3>
+                            <div class="flex gap-4">
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-green-600 hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                    </svg>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-black hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-12.7 12.5S1.2 13 3 12c-2-.2-3.5-1.5-3.5-3 3 1 6 1 6 1-2-1.5-2.5-5-1-7 3 3.5 7.5 5.5 11.5 5.5 0-4.5 6-5 7.5-1.5"/>
+                                    </svg>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-blue-700 hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                        <rect x="2" y="9" width="4" height="12"/>
+                                        <circle cx="4" cy="4" r="2"/>
+                                    </svg>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-red-600 hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Founders -->
+                        <div class="text-left md:text-right">
+                            <h3 class="text-xl font-bold text-white mb-6">Founders of MockAI</h3>
+                            <ul class="space-y-2 text-slate-400">
+                                <li class="hover:text-blue-400 transition cursor-pointer">Omkar S</li>
+                                <li class="hover:text-blue-400 transition cursor-pointer">Swayam K</li>
+                                <li class="hover:text-blue-400 transition cursor-pointer">Sarthak C</li>
+                                <li class="hover:text-blue-400 transition cursor-pointer">Akash I</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-12 text-slate-600 text-sm">
+                        © 2025 MockAI Platform. All rights reserved.
+                    </div>
+                </footer>
             </div>
         </div>
 
@@ -644,7 +672,7 @@
                         </div>
 
                         <div class="absolute bottom-8 w-[90%] glass-card p-4 rounded-xl border-l-4 border-blue-500 animate-enter">
-                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Current Question</p>
+                            <p id="agent-status-text" class="text-slate-400 text-xs uppercase font-bold mb-1">AI Speaking...</p>
                             <p id="current-question" class="text-white text-lg font-medium leading-snug">"Initializing..."</p>
                             <div id="thinking-indicator" class="mt-2 flex items-center gap-2 text-purple-400 text-xs font-bold hidden">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
@@ -724,9 +752,10 @@ function solution() {
 
                             <button 
                                 id="answer-btn"
-                                class="h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-blue-600 hover:bg-blue-500 text-white"
+                                class="h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-slate-800 text-slate-500 cursor-not-allowed"
+                                disabled
                             >
-                                Start Answer
+                                Wait for AI...
                             </button>
 
                             <button id="end-interview-btn" class="p-3 rounded-full bg-red-600 hover:bg-red-700 text-white">
@@ -965,16 +994,21 @@ function solution() {
 
         // --- AUTHENTICATION ---
         function initAuth() {
-            // Check if user is logged in
+            // Updated Logic: Always start at Landing Page regardless of auth state
             const loginState = Storage.get(LOGIN_STATE_KEY);
+            
             if (loginState && loginState.isLoggedIn) {
+                // User is logged in
                 currentUser = Storage.get(USER_KEY);
                 interviewHistory = Storage.get(HISTORY_KEY) || [];
                 updateNavbar();
             } else {
-                // Redirect to login if not logged in
-                showPage('auth-page');
+                // User is not logged in, ensure navbar shows login buttons
+                updateNavbar();
             }
+            
+            // Set default view to Landing Page
+            showPage('landing-page');
             
             // Login form
             document.getElementById('login-form').addEventListener('submit', function(e) {
@@ -1080,14 +1114,30 @@ function solution() {
                 document.getElementById('auth-subtitle').textContent = 'Sign up to start practicing';
             });
             
-            // Logout functionality
+            // Nav Bar Login/Signup Buttons (NEW)
+            document.getElementById('nav-login-btn')?.addEventListener('click', () => {
+                showPage('auth-page');
+                document.getElementById('login-tab').click();
+            });
+
+            document.getElementById('nav-signup-btn')?.addEventListener('click', () => {
+                showPage('auth-page');
+                document.getElementById('signup-tab').click();
+            });
+
+            // Back/Close button on Auth Page (NEW)
+            document.getElementById('auth-back-btn')?.addEventListener('click', () => {
+                showPage('landing-page');
+            });
+            
+            // Logout functionality - Redirects to LANDING PAGE now
             document.getElementById('logout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 Storage.remove(USER_KEY);
                 Storage.remove(LOGIN_STATE_KEY);
                 currentUser = null;
                 updateNavbar();
-                showPage('auth-page');
+                showPage('landing-page'); // Stay on landing page, just logged out state
             });
             
             // Profile dropdown
@@ -1128,7 +1178,7 @@ function solution() {
                 `;
                 button.addEventListener('click', () => {
                     if (!currentUser) {
-                        showPage('auth-page');
+                        showPage('auth-page'); // Redirect to login if needed
                         return;
                     }
                     interviewConfig = { company };
@@ -1159,15 +1209,6 @@ function solution() {
             }
             
             // Button event listeners
-            document.getElementById('get-started-btn').addEventListener('click', () => {
-                if (!currentUser) {
-                    showPage('auth-page');
-                    return;
-                }
-                showPage('setup-page');
-                initSetupWizard();
-            });
-            
             document.getElementById('start-simulation-btn').addEventListener('click', () => {
                 if (!currentUser) {
                     showPage('auth-page');
@@ -1182,14 +1223,7 @@ function solution() {
                 document.getElementById('demo-video').play();
             });
             
-            document.getElementById('login-btn').addEventListener('click', () => {
-                showPage('auth-page');
-            });
-            
-            document.getElementById('auth-back-btn').addEventListener('click', () => {
-                showPage('landing-page');
-            });
-            
+            // Only need profile back button now since login button is hidden on landing
             document.getElementById('profile-back-btn').addEventListener('click', () => {
                 showPage('landing-page');
             });
@@ -1647,7 +1681,7 @@ function solution() {
                 const icons = {
                     Code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
                     Brain: '<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>',
-                    Sparkles: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>',
+                    Sparkles: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>',
                     Database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>'
                 };
                 
@@ -1684,14 +1718,15 @@ function solution() {
                 document.getElementById('task-timer').classList.add('hidden');
             }
             
-            // Initialize timers
+            // Initialize timers and State
             let timeLeft = interviewConfig.duration * 60;
             let taskTimeLeft = 5 * 60; // 5 min for task in technical rounds
-            let isSpeaking = false;
-            let aiStatus = "speaking"; 
+            let aiStatus = "thinking"; // 'speaking', 'listening', 'thinking'
+            let isUserSpeaking = false;
             let currentQuestion = "Initializing...";
             let micOn = true;
             let cameraOn = true;
+            let questionTimer = null;
             
             document.getElementById('current-question').textContent = `"${currentQuestion}"`;
             document.getElementById('total-timer').textContent = `Total: ${formatTime(timeLeft)}`;
@@ -1753,14 +1788,107 @@ function solution() {
                     cameraOn = false;
                     micOn = false;
                 });
+
+            // --- AI Turn-Taking Logic ---
             
-            // Generate initial question
+            function updateAgentUI() {
+                const statusText = document.getElementById('agent-status-text');
+                const answerBtn = document.getElementById('answer-btn');
+                
+                if (aiStatus === 'speaking') {
+                    statusText.textContent = "AI Speaking...";
+                    statusText.className = "text-blue-400 text-xs uppercase font-bold mb-1 animate-pulse";
+                    
+                    answerBtn.textContent = "Listen to AI...";
+                    answerBtn.className = "h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-slate-800 text-slate-500 cursor-not-allowed";
+                    answerBtn.disabled = true;
+                    
+                    startAvatarSpeaking();
+                } else if (aiStatus === 'listening') {
+                    statusText.textContent = "AI Listening...";
+                    statusText.className = "text-green-400 text-xs uppercase font-bold mb-1";
+                    
+                    // Check if user is actively speaking (clicked button)
+                    if (isUserSpeaking) {
+                        answerBtn.textContent = interviewConfig.round.isTech ? "Submit Solution" : "Finish Answer";
+                        answerBtn.className = "h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-green-600 hover:bg-green-500 text-white animate-pulse";
+                        answerBtn.disabled = false;
+                    } else {
+                        answerBtn.textContent = "Start Answer";
+                        answerBtn.className = "h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-blue-600 hover:bg-blue-500 text-white";
+                        answerBtn.disabled = false;
+                    }
+                    
+                    stopAvatarSpeaking();
+                } else if (aiStatus === 'thinking') {
+                    statusText.textContent = "AI Processing...";
+                    statusText.className = "text-purple-400 text-xs uppercase font-bold mb-1";
+                    
+                    answerBtn.textContent = "Processing...";
+                    answerBtn.className = "h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-slate-800 text-slate-500 cursor-wait";
+                    answerBtn.disabled = true;
+                    
+                    stopAvatarSpeaking();
+                }
+            }
+
+            function speakAI(text) {
+                aiStatus = 'speaking';
+                currentQuestion = text;
+                document.getElementById('current-question').textContent = `"${text}"`;
+                updateAgentUI();
+                
+                // Simulate speech duration (approx 250ms per word)
+                const wordCount = text.split(' ').length;
+                const duration = Math.max(2000, wordCount * 250); // Minimum 2s
+                
+                if (questionTimer) clearTimeout(questionTimer);
+                
+                questionTimer = setTimeout(() => {
+                    aiStatus = 'listening';
+                    updateAgentUI();
+                }, duration);
+            }
+            
+            // Initial Question trigger
             setTimeout(() => {
                 const q = MockBackend.generateQuestion(interviewConfig.company, interviewConfig.role, interviewConfig.round);
-                currentQuestion = q;
-                document.getElementById('current-question').textContent = `"${q}"`;
-                aiStatus = "listening";
-            }, 4000);
+                speakAI(q);
+            }, 1500);
+            
+            // Answer Button Logic
+            document.getElementById('answer-btn').addEventListener('click', async function() {
+                if (aiStatus === 'listening') {
+                    if (!isUserSpeaking) {
+                        // START SPEAKING
+                        isUserSpeaking = true;
+                        updateAgentUI();
+                    } else {
+                        // FINISH SPEAKING
+                        isUserSpeaking = false;
+                        aiStatus = 'thinking';
+                        updateAgentUI();
+                        document.getElementById('thinking-indicator').classList.remove('hidden');
+                        
+                        // Simulate backend processing
+                        await MockBackend.analyzeResponse("dummy text");
+                        
+                        document.getElementById('thinking-indicator').classList.add('hidden');
+                        
+                        // AI Speaks next question
+                        const nextQ = MockBackend.generateQuestion(interviewConfig.company, interviewConfig.role, interviewConfig.round);
+                        speakAI(nextQ);
+                        
+                        // Reset task timer for technical rounds
+                        if (interviewConfig.round.isTech) {
+                            taskTimeLeft = 5 * 60;
+                            document.getElementById('task-timer').textContent = `Task: ${formatTime(taskTimeLeft)}`;
+                            document.getElementById('task-timer').classList.remove('border-red-500', 'bg-red-500/20', 'text-red-400', 'animate-pulse');
+                            document.getElementById('task-timer').classList.add('border-yellow-500/50', 'bg-yellow-500/10', 'text-yellow-200');
+                        }
+                    }
+                }
+            });
             
             // Control buttons
             document.getElementById('mic-toggle').addEventListener('click', function() {
@@ -1833,61 +1961,10 @@ function solution() {
                 }
             });
             
-            document.getElementById('answer-btn').addEventListener('click', async function() {
-                if (aiStatus === 'listening' && !isSpeaking) {
-                    // Start answering
-                    isSpeaking = true;
-                    this.classList.remove('bg-blue-600', 'hover:bg-blue-500');
-                    this.classList.add('bg-green-600', 'hover:bg-green-500', 'animate-pulse');
-                    this.innerHTML = interviewConfig.round.isTech ? 'Submit Solution' : 'Finish Answer';
-                    
-                    // Start avatar speaking animation
-                    startAvatarSpeaking();
-                } else if (isSpeaking) {
-                    // Finish answering
-                    isSpeaking = false;
-                    this.classList.remove('bg-green-600', 'hover:bg-green-500', 'animate-pulse');
-                    this.classList.add('bg-slate-800', 'text-slate-500');
-                    this.disabled = true;
-                    this.innerHTML = 'Processing...';
-                    
-                    // Stop avatar speaking
-                    stopAvatarSpeaking();
-                    
-                    aiStatus = "thinking";
-                    document.getElementById('thinking-indicator').classList.remove('hidden');
-                    
-                    await MockBackend.analyzeResponse("dummy text");
-                    
-                    // Generate next question
-                    const nextQ = MockBackend.generateQuestion(interviewConfig.company, interviewConfig.role, interviewConfig.round);
-                    currentQuestion = nextQ;
-                    document.getElementById('current-question').textContent = `"${nextQ}"`;
-                    
-                    document.getElementById('thinking-indicator').classList.add('hidden');
-                    aiStatus = "speaking";
-                    
-                    // Reset task timer for next question
-                    if (interviewConfig.round.isTech) {
-                        taskTimeLeft = 5 * 60;
-                        document.getElementById('task-timer').textContent = `Task: ${formatTime(taskTimeLeft)}`;
-                        document.getElementById('task-timer').classList.remove('border-red-500', 'bg-red-500/20', 'text-red-400', 'animate-pulse');
-                        document.getElementById('task-timer').classList.add('border-yellow-500/50', 'bg-yellow-500/10', 'text-yellow-200');
-                    }
-                    
-                    setTimeout(() => {
-                        aiStatus = "listening";
-                        this.classList.remove('bg-slate-800', 'text-slate-500');
-                        this.classList.add('bg-blue-600', 'hover:bg-blue-500');
-                        this.disabled = false;
-                        this.innerHTML = 'Start Answer';
-                    }, 4000);
-                }
-            });
-            
             document.getElementById('end-interview-btn').addEventListener('click', () => {
                 clearInterval(totalTimer);
                 if (taskTimer) clearInterval(taskTimer);
+                if (questionTimer) clearTimeout(questionTimer);
                 
                 // Stop camera and microphone
                 if (userStream) {
