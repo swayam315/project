@@ -5,20 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MockAI - Master Your Interview</title>
     
-    <!-- React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-
-    <!-- Custom Styles -->
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -100,13 +92,789 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* Page Transitions */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        
+        /* Profile Photo Modal */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        /* Camera Preview */
+        #camera-preview {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+        
+        /* Company logo styling */
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="app">
+        <!-- Landing Page -->
+        <div id="landing-page" class="page active">
+            <div class="min-h-screen relative flex flex-col">
+                <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+                <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
-    <script type="text/babel" data-presets="react,env">
-        const { useState, useEffect, useRef } = React;
+                <nav class="z-10 px-8 py-6 flex justify-between items-center glass-panel mx-4 mt-4 rounded-2xl">
+                    <div class="flex items-center gap-2 font-bold text-2xl tracking-tighter">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/>
+                                <path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>
+                            </svg>
+                        </div>
+                        Mock<span class="text-blue-400">AI</span>
+                    </div>
+                    
+                    <div id="nav-auth" class="flex gap-4">
+                        <button id="login-btn" class="px-5 py-2 text-slate-300 hover:text-white font-medium">Login</button>
+                        <button id="get-started-btn" class="px-5 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                            Get Started
+                        </button>
+                    </div>
+                    
+                    <div id="nav-user" class="hidden flex items-center gap-6">
+                        <a href="#" class="text-slate-300 hover:text-white font-medium transition">Home</a>
+                        <a href="#" class="text-slate-300 hover:text-white font-medium transition">Features</a>
+                        <div class="flex items-center gap-2 pl-6 border-l border-white/10">
+                            <div id="profile-dropdown" class="relative">
+                                <button id="profile-btn" class="flex items-center gap-2">
+                                    <img id="user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="w-8 h-8 rounded-full border border-blue-500/50" />
+                                    <span id="user-name" class="font-medium">Admin User</span>
+                                </button>
+                                <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 glass-panel rounded-xl py-2 hidden z-50">
+                                    <a href="#" id="view-profile" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/5">View Profile</a>
+                                    <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-400 hover:bg-white/5">Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <main class="flex-1 flex flex-col items-center justify-center text-center px-4 relative z-10 mt-12 mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs font-bold mb-6 animate-pulse">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        New: DeepSeek & OpenAI Agents Added
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-7xl font-bold mb-6 max-w-5xl leading-[1.1] tracking-tight">
+                        Master Your Next Interview with <br class="hidden md:block"/>
+                        <span class="text-gradient">AI Simulation</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
+                        Practice real company-specific interviews with intelligent AI Agents. Get real-time feedback on technical skills, voice modulation, and body language.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16">
+                        <button id="start-simulation-btn" class="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
+                            Start Free Simulation
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                        <button id="demo-btn" class="px-8 py-4 glass-panel rounded-xl font-bold text-lg hover:bg-white/5 transition flex items-center justify-center gap-2">
+                            <div class="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-0.5 fill-white">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                            </div>
+                            View Demo
+                        </button>
+                    </div>
+                </main>
+
+                <!-- Marquee -->
+                <div class="w-full py-8 border-y border-white/5 bg-black/20 backdrop-blur-sm mb-12">
+                    <div class="marquee-wrapper">
+                        <div class="marquee-content gap-16 px-8">
+                            <!-- Marquee content will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Selection Grid -->
+                <div class="max-w-6xl mx-auto px-4 pb-20 w-full animate-enter border-b border-white/5 mb-12">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold mb-4">Select a Company to Interview</h2>
+                        <p class="text-slate-400">Choose your target and start practicing immediately.</p>
+                    </div>
+                    <div id="company-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <!-- Company buttons will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Our Story Section -->
+                <div class="max-w-6xl mx-auto px-4 pb-20 animate-enter">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="flex-1">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-bold mb-6">
+                                OUR MISSION
+                            </div>
+                            <h2 class="text-3xl md:text-4xl font-bold mb-6">Why We Built MockAI</h2>
+                            <p class="text-slate-400 text-lg leading-relaxed">
+                                The idea for MockAI was born from a shared struggle: the anxiety of the empty interview room. We realized that while technical skills are taught, the art of interviewing—handling pressure, articulation, and body language—is often left to chance. 
+                                <br/><br/>
+                                Our mission is to democratize interview preparation, providing a safe, intelligent space for candidates to fail, learn, and eventually succeed. We believe everyone deserves the chance to tell their story with confidence. We're building the future of interview preparation, where AI doesn't just test you, but truly understands and helps you improve your communication, problem-solving, and presentation skills.
+                            </p>
+                        </div>
+                        <div class="flex-1">
+                            <img src="mission.jpeg" alt="Our Mission" class="w-full h-80 object-cover rounded-2xl" onerror="this.src='https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80'" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meet The Team Section -->
+                <div class="max-w-6xl mx-auto px-4 pb-20 animate-enter">
+                    <h2 class="text-3xl font-bold mb-12 text-center">Meet Our Team</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img1.jpg" alt="The Backend Guy" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=1'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">The Backend Guy</h3>
+                        </div>
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img2.jpg" alt="Product Design & Content Architect" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=2'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">Product Design & Content Architect</h3>
+                        </div>
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img3.jpg" alt="AI Enthusiast" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=3'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">AI Enthusiast</h3>
+                        </div>
+                        <div class="flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/5 group-hover:border-blue-500 transition duration-300 mb-4 bg-slate-800 relative">
+                                <img src="img4.jpg" alt="The Frontend Geek" class="w-full h-full object-cover hover:scale-110 transition duration-500" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=4'" />
+                            </div>
+                            <h3 class="font-bold text-white text-lg">The Frontend Geek</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="w-full py-12 border-t border-white/5 bg-black/40">
+                    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between gap-10">
+                        
+                        <!-- Contact Us -->
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                                Contact Us
+                            </h3>
+                            <div class="flex gap-4">
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-green-600 hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                    </svg>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-black hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-12.7 12.5S1.2 13 3 12c-2-.2-3.5-1.5-3.5-3 3 1 6 1 6 1-2-1.5-2.5-5-1-7 3 3.5 7.5 5.5 11.5 5.5 0-4.5 6-5 7.5-1.5"/>
+                                    </svg>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-blue-700 hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                        <rect x="2" y="9" width="4" height="12"/>
+                                        <circle cx="4" cy="4" r="2"/>
+                                    </svg>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 transition-all duration-300 hover:bg-red-600 hover:text-white hover:-translate-y-1">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Founders -->
+                        <div class="text-left md:text-right">
+                            <h3 class="text-xl font-bold text-white mb-6">Founders of MockAI</h3>
+                            <ul class="space-y-2 text-slate-400">
+                                <li class="hover:text-blue-400 transition cursor-pointer">Omkar S</li>
+                                <li class="hover:text-blue-400 transition cursor-pointer">Swayam K</li>
+                                <li class="hover:text-blue-400 transition cursor-pointer">Sarthak C</li>
+                                <li class="hover:text-blue-400 transition cursor-pointer">Akash I</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-12 text-slate-600 text-sm">
+                        © 2025 MockAI Platform. All rights reserved.
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Login/Signup Page -->
+        <div id="auth-page" class="page">
+            <div class="min-h-screen flex items-center justify-center relative p-4">
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-[#020617] to-[#020617] -z-10"></div>
+                <button id="auth-back-btn" class="absolute top-6 left-6 text-slate-400 hover:text-white flex items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back to Home
+                </button>
+
+                <div class="w-full max-w-md glass-panel p-8 rounded-2xl animate-enter">
+                    <div class="text-center mb-8">
+                        <h2 id="auth-title" class="text-3xl font-bold mb-2">Welcome Back</h2>
+                        <p id="auth-subtitle" class="text-slate-400">Login to access your profile</p>
+                    </div>
+
+                    <div class="flex mb-6 rounded-lg bg-slate-800/50 p-1">
+                        <button id="login-tab" class="flex-1 py-2 rounded-md font-medium transition bg-blue-600 text-white">Login</button>
+                        <button id="signup-tab" class="flex-1 py-2 rounded-md font-medium transition text-slate-400 hover:text-white">Sign Up</button>
+                    </div>
+
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Email</label>
+                            <input 
+                                type="email" 
+                                id="login-email"
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                                placeholder="Enter your email"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Password</label>
+                            <input 
+                                type="password" 
+                                id="login-password"
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
+                        
+                        <div id="login-error" class="text-red-400 text-sm text-center hidden"></div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-blue-500/20">
+                            Login
+                        </button>
+                        
+                        <div class="text-center text-sm text-slate-400 mt-4">
+                            Don't have an account? 
+                            <button type="button" id="switch-to-signup" class="text-blue-400 hover:text-blue-300 font-medium">Create one</button>
+                        </div>
+                    </form>
+
+                    <form id="signup-form" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Username</label>
+                            <input 
+                                type="text" 
+                                id="signup-username"
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                                placeholder="Choose a username"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Email</label>
+                            <input 
+                                type="email" 
+                                id="signup-email"
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                                placeholder="Enter your email"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Password</label>
+                            <input 
+                                type="password" 
+                                id="signup-password"
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                                placeholder="Create a password"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Current Status</label>
+                            <select 
+                                id="signup-status"
+                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                                required
+                            >
+                                <option value="" disabled selected>Select your status</option>
+                                <option value="student">Student</option>
+                                <option value="fresher">Fresher</option>
+                                <option value="unemployed">Unemployed</option>
+                                <option value="employed">Employed</option>
+                            </select>
+                        </div>
+                        
+                        <div id="signup-error" class="text-red-400 text-sm text-center hidden"></div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-blue-500/20">
+                            Sign In
+                        </button>
+                        
+                        <div class="text-center text-sm text-slate-400 mt-4">
+                            Already have an account? 
+                            <button type="button" id="switch-to-login" class="text-blue-400 hover:text-blue-300 font-medium">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Photo Modal (after signup) -->
+        <div id="profile-photo-modal" class="profile-modal hidden">
+            <div class="w-full max-w-md glass-panel p-8 rounded-2xl animate-enter">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Add Profile Photo</h2>
+                    <button id="close-profile-modal" class="text-slate-400 hover:text-white">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <p class="text-slate-400">Add a profile photo to personalize your account</p>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <button id="upload-from-gallery" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition">
+                        Upload from Gallery
+                    </button>
+                    <button id="take-photo" class="w-full py-3 glass-panel hover:bg-white/5 rounded-lg font-medium transition">
+                        Take Photo with Camera
+                    </button>
+                    <button id="skip-for-now" class="w-full py-3 text-slate-400 hover:text-white font-medium transition">
+                        Skip for Now
+                    </button>
+                </div>
+                
+                <!-- Camera Preview (hidden by default) -->
+                <div id="camera-container" class="mt-4 hidden">
+                    <video id="camera-preview" autoplay playsinline></video>
+                    <div class="flex justify-center mt-4">
+                        <button id="capture-photo" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-medium transition">
+                            Capture Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profile-page" class="page">
+            <div class="min-h-screen bg-[#020617] p-4 md:p-8">
+                <div class="max-w-6xl mx-auto">
+                    <button id="profile-back-btn" class="mb-6 text-slate-400 hover:text-white flex items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Back to Dashboard
+                    </button>
+
+                    <div class="glass-panel p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 mb-8">
+                        <div class="relative">
+                            <img id="profile-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="w-32 h-32 rounded-full border-4 border-blue-500/30 bg-slate-800" />
+                            <button id="change-photo-btn" class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-center md:text-left flex-1">
+                            <h1 id="profile-name" class="text-3xl font-bold mb-2">Admin User</h1>
+                            <p id="profile-username" class="text-slate-400">@admin</p>
+                            <p id="profile-status" class="text-slate-400 mt-1">Status: Student</p>
+                            <div class="flex gap-4 mt-4 justify-center md:justify-start">
+                                <div class="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+                                    <div id="interview-count" class="text-2xl font-bold text-white">1</div>
+                                    <div class="text-xs text-slate-400 uppercase">Interviews</div>
+                                </div>
+                                <div class="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+                                    <div id="avg-score" class="text-2xl font-bold text-green-400">85%</div>
+                                    <div class="text-xs text-slate-400 uppercase">Avg Score</div>
+                                </div>
+                                <div class="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+                                    <div id="improvement-rate" class="text-2xl font-bold text-blue-400">+12%</div>
+                                    <div class="text-xs text-slate-400 uppercase">Improvement</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Improvement Graph -->
+                    <div class="glass-panel p-6 rounded-2xl mb-8">
+                        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                <polyline points="17 6 23 6 23 12"/>
+                            </svg>
+                            Performance Progress
+                        </h2>
+                        <div class="h-64 bg-slate-800/30 rounded-lg flex items-center justify-center text-slate-500">
+                            Performance Graph Would Appear Here
+                        </div>
+                    </div>
+
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                        </svg>
+                        Interview History
+                    </h2>
+                    
+                    <div id="history-container" class="space-y-4">
+                        <!-- History items will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Wizard -->
+        <div id="setup-page" class="page">
+            <div class="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-[#020617]"></div>
+                
+                <div class="w-full max-w-4xl glass-panel p-8 md:p-12 rounded-3xl relative z-10 min-h-[600px] flex flex-col">
+                    <div class="flex justify-between items-center mb-12 relative">
+                        <div class="absolute left-0 top-1/2 w-full h-1 bg-slate-800 -z-10 rounded-full"></div>
+                        <div id="step-progress" class="absolute left-0 top-1/2 h-1 bg-blue-500 -z-10 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        
+                        <!-- Steps will be populated by JS -->
+                    </div>
+
+                    <div id="step-content" class="flex-1">
+                        <!-- Step content will be populated by JS -->
+                    </div>
+
+                    <div class="mt-8 flex justify-between border-t border-slate-800 pt-6">
+                        <button id="prev-step-btn" class="text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-medium">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                            Back
+                        </button>
+                        <button id="cancel-setup-btn" class="text-sm text-red-400 hover:text-red-300">
+                            Cancel Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interview Room -->
+        <div id="interview-page" class="page">
+            <div class="h-screen flex flex-col bg-[#0f1115] relative overflow-hidden">
+                <header class="h-16 px-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-md z-20">
+                    <div class="flex items-center gap-4">
+                        <div id="company-icon" class="w-10 h-10 rounded bg-blue-500/10 flex items-center justify-center font-bold text-xl text-blue-500">
+                            G
+                        </div>
+                        <div>
+                            <h1 id="interview-title" class="font-bold text-white">Google Interview</h1>
+                            <div class="flex items-center gap-2 text-xs text-slate-400">
+                                <span id="interview-role">Software Engineer</span>
+                                <span>•</span>
+                                <span id="interview-round" class="text-blue-400 font-bold">Technical Round 1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div id="task-timer" class="hidden px-4 py-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 text-yellow-200 font-mono font-bold flex items-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Task: 5:00
+                        </div>
+                        <div id="total-timer" class="px-4 py-1 rounded-full border border-slate-600 bg-slate-800 text-slate-300 font-mono font-bold">
+                            Total: 20:00
+                        </div>
+                    </div>
+                </header>
+
+                <main class="flex-1 p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative h-[calc(100vh-5rem)]">
+                    
+                    <!-- Left Side: AI Agent -->
+                    <div class="relative glass-panel rounded-2xl flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+                        <div class="absolute top-4 left-4 bg-black/40 px-3 py-1 rounded-full text-xs font-bold text-blue-400 border border-blue-500/20 backdrop-blur-md z-10 flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span id="agent-name">Technical Agent</span>
+                        </div>
+                        
+                        <div class="w-[90%] max-w-[500px] aspect-square -mt-10">
+                            <canvas id="avatar-canvas" width="400" height="400" class="w-full h-full object-contain drop-shadow-2xl"></canvas>
+                        </div>
+
+                        <div class="absolute bottom-8 w-[90%] glass-card p-4 rounded-xl border-l-4 border-blue-500 animate-enter">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Current Question</p>
+                            <p id="current-question" class="text-white text-lg font-medium leading-snug">"Initializing..."</p>
+                            <div id="thinking-indicator" class="mt-2 flex items-center gap-2 text-purple-400 text-xs font-bold hidden">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+                                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                                </svg>
+                                Processing Answer...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: User / Code Editor -->
+                    <div class="flex flex-col gap-4 h-full">
+                        <div id="tech-interview-view" class="flex-1 glass-panel rounded-2xl p-4 flex flex-col relative hidden">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 18 22 12 16 6"/>
+                                        <polyline points="8 6 2 12 8 18"/>
+                                    </svg>
+                                    Live Code Editor
+                                </span>
+                                <span class="text-[10px] text-slate-500">JavaScript</span>
+                            </div>
+                            <textarea 
+                                id="code-editor"
+                                class="flex-1 bg-[#0d1117] text-green-400 font-mono-code p-4 rounded-lg resize-none focus:outline-none focus:ring-1 focus:ring-green-500/50 text-sm leading-relaxed"
+                                spellcheck="false"
+                            >// Write your solution here...
+function solution() {
+  
+}</textarea>
+                            <!-- User Mini Cam -->
+                            <div class="absolute bottom-4 right-4 w-32 h-24 bg-black rounded-lg overflow-hidden border border-white/20 shadow-2xl">
+                                <video id="user-video" autoplay muted class="w-full h-full object-cover transform scale-x-[-1]"></video>
+                                <div id="video-off-indicator" class="w-full h-full flex items-center justify-center text-slate-600 hidden">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+                                        <line x1="1" y1="1" x2="23" y2="23"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="normal-interview-view" class="flex-1 relative glass-panel rounded-2xl bg-black overflow-hidden flex items-center justify-center group">
+                            <video id="normal-video" autoplay muted class="w-full h-full object-cover transform scale-x-[-1]"></video>
+                            <div id="normal-video-off" class="flex flex-col items-center text-slate-600 hidden">
+                                <div class="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mb-4">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+                                        <line x1="1" y1="1" x2="23" y2="23"/>
+                                    </svg>
+                                </div>
+                                <p>Camera Off</p>
+                            </div>
+                            <div class="absolute bottom-4 left-4 text-white font-medium bg-black/50 px-2 py-1 rounded backdrop-blur-sm">You</div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="h-20 bg-slate-900/80 backdrop-blur-lg border border-white/10 rounded-2xl flex justify-between items-center px-6">
+                            <div class="flex gap-2">
+                                <button id="mic-toggle" class="p-3 rounded-full transition bg-slate-800 hover:bg-slate-700 text-white">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                        <line x1="12" y1="19" x2="12" y2="23"/>
+                                        <line x1="8" y1="23" x2="16" y2="23"/>
+                                    </svg>
+                                </button>
+                                <button id="video-toggle" class="p-3 rounded-full transition bg-slate-800 hover:bg-slate-700 text-white">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <button 
+                                id="answer-btn"
+                                class="h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg bg-blue-600 hover:bg-blue-500 text-white"
+                            >
+                                Start Answer
+                            </button>
+
+                            <button id="end-interview-btn" class="p-3 rounded-full bg-red-600 hover:bg-red-700 text-white">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Results Page -->
+        <div id="results-page" class="page">
+            <div class="min-h-screen bg-[#020617] flex items-center justify-center p-4">
+                <div class="w-full max-w-6xl h-[90vh] glass-panel rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl">
+                    <div class="w-full md:w-1/3 bg-slate-900/80 p-8 flex flex-col border-r border-white/5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+                        <h2 class="text-2xl font-bold mb-8">Performance Summary</h2>
+                        <div class="flex-1 flex flex-col items-center justify-center">
+                            <div class="relative w-48 h-48 mb-6">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle cx="96" cy="96" r="88" class="text-slate-800 stroke-current" stroke-width="12" fill="none"/>
+                                    <circle cx="96" cy="96" r="88" class="text-blue-500 stroke-current" stroke-width="12" fill="none" stroke-dasharray="552" stroke-dashoffset="80" stroke-linecap="round"/>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-5xl font-bold text-white">85</span><span class="text-sm text-slate-400 uppercase tracking-widest mt-1">Score</span></div>
+                            </div>
+                            <div class="text-center"><h3 class="text-xl font-bold text-white mb-2">Great Job!</h3><p class="text-slate-400 text-sm">You performed better than 72% of candidates for <span id="results-role">Software Engineer</span>.</p></div>
+                        </div>
+                        <button id="new-session-btn" class="w-full py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition">Start New Session</button>
+                    </div>
+                    <div class="flex-1 bg-slate-900/40 p-8 md:p-12 overflow-y-auto">
+                        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3"><div class="p-2 bg-purple-500/20 rounded-lg text-purple-400"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>Improvement Plan</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="glass-card p-6 rounded-xl border-l-4 border-green-500 bg-green-500/5">
+                                <h3 class="font-bold text-green-400 mb-4 flex items-center gap-2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Strengths</h3>
+                                <ul id="strengths-list" class="space-y-3 text-sm text-slate-300">
+                                    <!-- Strengths will be populated by JS -->
+                                </ul>
+                            </div>
+                            <div class="glass-card p-6 rounded-xl border-l-4 border-yellow-500 bg-yellow-500/5">
+                                <h3 class="font-bold text-yellow-400 mb-4 flex items-center gap-2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Areas to Improve</h3>
+                                <ul id="improvements-list" class="space-y-3 text-sm text-slate-300">
+                                    <!-- Improvements will be populated by JS -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button id="download-pdf-btn" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition flex items-center gap-2">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Download PDF
+                            </button>
+                            <button id="copy-plan-btn" class="px-6 py-3 glass-panel hover:bg-white/5 rounded-xl font-bold transition">
+                                Copy Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Modal -->
+        <div id="video-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-enter hidden">
+            <div class="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <button id="close-modal-btn" class="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full hover:bg-white/20 text-white transition">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <video id="demo-video" controls class="w-full h-full">
+                    <source src="inter.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <!-- Change Profile Photo Modal -->
+        <div id="change-photo-modal" class="profile-modal hidden">
+            <div class="w-full max-w-md glass-panel p-8 rounded-2xl animate-enter">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Change Profile Photo</h2>
+                    <button id="close-change-photo-modal" class="text-slate-400 hover:text-white">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <p class="text-slate-400">Choose how you want to update your profile photo</p>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <button id="change-upload-gallery" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition">
+                        Upload from Gallery
+                    </button>
+                    <button id="change-take-photo" class="w-full py-3 glass-panel hover:bg-white/5 rounded-lg font-medium transition">
+                        Take Photo with Camera
+                    </button>
+                </div>
+                
+                <!-- Camera Preview (hidden by default) -->
+                <div id="change-camera-container" class="mt-4 hidden">
+                    <video id="change-camera-preview" autoplay playsinline></video>
+                    <div class="flex justify-center mt-4">
+                        <button id="change-capture-photo" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-medium transition">
+                            Capture Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const COMPANIES = [
+            { name: "Google", color: "text-red-500", bg: "bg-red-500/10", logo: "google.png" },
+            { name: "Microsoft", color: "text-blue-500", bg: "bg-blue-500/10", logo: "microsoft.png" },
+            { name: "Meta", color: "text-blue-600", bg: "bg-blue-600/10", logo: "meta.png" },
+            { name: "Amazon", color: "text-yellow-500", bg: "bg-yellow-500/10", logo: "amazon.png" },
+            { name: "Netflix", color: "text-red-600", bg: "bg-red-600/10", logo: "netflix.png" },
+            { name: "Apple", color: "text-gray-200", bg: "bg-gray-500/10", logo: "apple.png" },
+            { name: "Tesla", color: "text-red-500", bg: "bg-red-500/10", logo: "tesla.png" },
+            { name: "OpenAI", color: "text-green-500", bg: "bg-green-500/10", logo: "openai.png" },
+            { name: "DeepSeek", color: "text-purple-500", bg: "bg-purple-500/10", logo: "deepseek.png" },
+            { name: "Infosys", color: "text-blue-400", bg: "bg-blue-400/10", logo: "infosys.png" }
+        ];
+
+        const ROLES = [
+            { id: 'swe', title: 'Software Engineer', icon: 'Code', desc: 'Algorithms, System Design' },
+            { id: 'ml', title: 'Machine Learning', icon: 'Brain', desc: 'Models, Neural Networks' },
+            { id: 'ai', title: 'AI Engineer', icon: 'Sparkles', desc: 'LLMs, Agents, RAG' },
+            { id: 'data', title: 'Data Analyst', icon: 'Database', desc: 'SQL, Visualization' },
+        ];
+
+        const ROUNDS = [
+            { id: 'comm', title: 'Communication Round', agent: 'Communication Agent', desc: 'Verbal fluency & clarity', isTech: false, duration: 6 },
+            { id: 'hr', title: 'HR Round', agent: 'HR Agent', desc: 'Culture fit & background', isTech: false, duration: 6 },
+            { id: 'behav', title: 'Behavioral Round', agent: 'Behavioral Agent', desc: 'Situational questions', isTech: false, duration: 6 },
+            { id: 'tech1', title: 'Technical Round 1', agent: 'Technical Agent', desc: 'Core Coding & DSA', isTech: true, duration: 20 },
+            { id: 'apt', title: 'Aptitude Round', agent: 'Aptitude Agent', desc: 'Logic & Reasoning', isTech: false, duration: 6 },
+            { id: 'tech2', title: 'Technical Round 2', agent: 'System Design Agent', desc: 'Architecture & Scale', isTech: true, duration: 20 },
+        ];
 
         // --- MOCK BACKEND SERVICE ---
         const MockBackend = {
@@ -137,337 +905,392 @@
             }
         };
 
-        // --- ICONS ---
-        const Icon = ({ path, size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                {path}
-            </svg>
-        );
-
-        const Icons = {
-            Mic: <><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></>,
-            MicOff: <><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></>,
-            Video: <><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></>,
-            VideoOff: <><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/><line x1="1" y1="1" x2="23" y2="23"/></>,
-            PhoneOff: <><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="1" y1="1" x2="23" y2="23"/></>,
-            Upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
-            Clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
-            Check: <polyline points="20 6 9 17 4 12"/>,
-            ChevronRight: <polyline points="9 18 15 12 9 6"/>,
-            ChevronLeft: <polyline points="15 18 9 12 15 6"/>,
-            Sparkles: <><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/></>,
-            Briefcase: <><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>,
-            Code: <><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>,
-            Brain: <><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></>,
-            Database: <><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>,
-            Star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>,
-            TrendingUp: <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>,
-            AlertCircle: <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
-            Loader: <path d="M21 12a9 9 0 1 1-6.219-8.56"/>,
-            User: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
-            LogOut: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
-            Play: <polygon points="5 3 19 12 5 21 5 3"/>,
-            X: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
+        // --- STORAGE MANAGEMENT ---
+        const Storage = {
+            set: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
+            get: (key) => JSON.parse(localStorage.getItem(key)) || null,
+            remove: (key) => localStorage.removeItem(key)
         };
 
-        const SimpleIcon = ({ name, size, className }) => (
-            <Icon path={Icons[name] || Icons.AlertCircle} size={size} className={className} />
-        );
+        const USER_KEY = 'mockAI_user';
+        const INTERVIEW_CONFIG_KEY = 'mockAI_interviewConfig';
+        const HISTORY_KEY = 'mockAI_history';
 
-        // --- DATA ---
-        const COMPANIES = [
-            { name: "Google", color: "text-red-500", bg: "bg-red-500/10" },
-            { name: "Microsoft", color: "text-blue-500", bg: "bg-blue-500/10" },
-            { name: "Meta", color: "text-blue-600", bg: "bg-blue-600/10" },
-            { name: "Amazon", color: "text-yellow-500", bg: "bg-yellow-500/10" },
-            { name: "Netflix", color: "text-red-600", bg: "bg-red-600/10" },
-            { name: "Apple", color: "text-gray-200", bg: "bg-gray-500/10" },
-            { name: "Tesla", color: "text-red-500", bg: "bg-red-500/10" },
-            { name: "OpenAI", color: "text-green-500", bg: "bg-green-500/10" },
-            { name: "DeepSeek", color: "text-purple-500", bg: "bg-purple-500/10" },
-            { name: "Infosys", color: "text-blue-400", bg: "bg-blue-400/10" }
-        ];
+        // --- APP STATE ---
+        let currentUser = null;
+        let interviewConfig = null;
+        let interviewHistory = [];
 
-        const ROLES = [
-            { id: 'swe', title: 'Software Engineer', icon: 'Code', desc: 'Algorithms, System Design' },
-            { id: 'ml', title: 'Machine Learning', icon: 'Brain', desc: 'Models, Neural Networks' },
-            { id: 'ai', title: 'AI Engineer', icon: 'Sparkles', desc: 'LLMs, Agents, RAG' },
-            { id: 'data', title: 'Data Analyst', icon: 'Database', desc: 'SQL, Visualization' },
-        ];
+        // --- UTILITY FUNCTIONS ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
 
-        const ROUNDS = [
-            { id: 'comm', title: 'Communication Round', agent: 'Communication Agent', desc: 'Verbal fluency & clarity', isTech: false },
-            { id: 'hr', title: 'HR Round', agent: 'HR Agent', desc: 'Culture fit & background', isTech: false },
-            { id: 'behav', title: 'Behavioral Round', agent: 'Behavioral Agent', desc: 'Situational questions', isTech: false },
-            { id: 'tech1', title: 'Technical Round 1', agent: 'Technical Agent', desc: 'Core Coding & DSA', isTech: true },
-            { id: 'apt', title: 'Aptitude Round', agent: 'Aptitude Agent', desc: 'Logic & Reasoning', isTech: false },
-            { id: 'tech2', title: 'Technical Round 2', agent: 'System Design Agent', desc: 'Architecture & Scale', isTech: true },
-        ];
+        function updateNavbar() {
+            const navAuth = document.getElementById('nav-auth');
+            const navUser = document.getElementById('nav-user');
+            const userAvatar = document.getElementById('user-avatar');
+            const userName = document.getElementById('user-name');
+            
+            if (currentUser) {
+                navAuth.classList.add('hidden');
+                navUser.classList.remove('hidden');
+                userAvatar.src = currentUser.avatar;
+                userName.textContent = currentUser.name;
+            } else {
+                navAuth.classList.remove('hidden');
+                navUser.classList.add('hidden');
+            }
+        }
 
-        // --- COMPONENTS ---
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            return `${min}:${sec < 10 ? '0' + sec : sec}`;
+        }
 
-        const VideoModal = ({ onClose }) => (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-enter" onClick={onClose}>
-                <div className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
-                    <button onClick={onClose} className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full hover:bg-white/20 text-white transition">
-                        <SimpleIcon name="X" size={24} />
-                    </button>
-                    <iframe 
-                        width="100%" 
-                        height="100%" 
-                        src="https://www.youtube.com/embed/0e3GPea1Tyg?autoplay=1" 
-                        title="YouTube video player" 
-                        frameBorder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowFullScreen>
-                    </iframe>
-                </div>
-            </div>
-        );
-
-        const LoginPage = ({ onLogin, onBack }) => {
-            const [user, setUser] = useState('');
-            const [pass, setPass] = useState('');
-            const [error, setError] = useState('');
-
-            const handleSubmit = (e) => {
+        // --- AUTHENTICATION ---
+        function initAuth() {
+            // Check if user is logged in
+            currentUser = Storage.get(USER_KEY);
+            interviewHistory = Storage.get(HISTORY_KEY) || [];
+            
+            updateNavbar();
+            
+            // Set up default user if none exists
+            if (!currentUser) {
+                const defaultUser = {
+                    name: 'Admin User',
+                    username: 'admin',
+                    email: 'admin@mockai.com',
+                    status: 'student',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+                    joined: new Date().toISOString()
+                };
+                Storage.set(USER_KEY, defaultUser);
+                currentUser = defaultUser;
+                updateNavbar();
+            }
+            
+            // Login form
+            document.getElementById('login-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                if (user === 'admin' && pass === 'admin') {
-                    onLogin({ name: 'Admin User', username: 'admin', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' });
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const errorDiv = document.getElementById('login-error');
+                
+                if (email === 'admin@mockai.com' && password === 'admin') {
+                    const user = {
+                        name: 'Admin User',
+                        username: 'admin',
+                        email: 'admin@mockai.com',
+                        status: 'student',
+                        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+                        joined: new Date().toISOString()
+                    };
+                    Storage.set(USER_KEY, user);
+                    currentUser = user;
+                    updateNavbar();
+                    showPage('landing-page');
                 } else {
-                    setError('Invalid credentials. Hint: admin/admin');
+                    errorDiv.textContent = 'Invalid credentials. Hint: admin@mockai.com / admin';
+                    errorDiv.classList.remove('hidden');
                 }
-            };
+            });
+            
+            // Signup form
+            document.getElementById('signup-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('signup-username').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const status = document.getElementById('signup-status').value;
+                const errorDiv = document.getElementById('signup-error');
+                
+                if (username && email && password && status) {
+                    const user = {
+                        name: username,
+                        username: username.toLowerCase(),
+                        email: email,
+                        status: status,
+                        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + username,
+                        joined: new Date().toISOString()
+                    };
+                    Storage.set(USER_KEY, user);
+                    currentUser = user;
+                    updateNavbar();
+                    
+                    // Show profile photo modal after signup
+                    document.getElementById('profile-photo-modal').classList.remove('hidden');
+                } else {
+                    errorDiv.textContent = 'Please fill in all fields';
+                    errorDiv.classList.remove('hidden');
+                }
+            });
+            
+            // Switch between login and signup
+            document.getElementById('switch-to-signup').addEventListener('click', function() {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('signup-form').classList.remove('hidden');
+                document.getElementById('login-tab').classList.remove('bg-blue-600', 'text-white');
+                document.getElementById('login-tab').classList.add('text-slate-400');
+                document.getElementById('signup-tab').classList.remove('text-slate-400');
+                document.getElementById('signup-tab').classList.add('bg-blue-600', 'text-white');
+                document.getElementById('auth-title').textContent = 'Create Account';
+                document.getElementById('auth-subtitle').textContent = 'Sign up to start practicing';
+            });
+            
+            document.getElementById('switch-to-login').addEventListener('click', function() {
+                document.getElementById('signup-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('signup-tab').classList.remove('bg-blue-600', 'text-white');
+                document.getElementById('signup-tab').classList.add('text-slate-400');
+                document.getElementById('login-tab').classList.remove('text-slate-400');
+                document.getElementById('login-tab').classList.add('bg-blue-600', 'text-white');
+                document.getElementById('auth-title').textContent = 'Welcome Back';
+                document.getElementById('auth-subtitle').textContent = 'Login to access your profile';
+            });
+            
+            // Tab switching
+            document.getElementById('login-tab').addEventListener('click', function() {
+                document.getElementById('signup-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+                this.classList.remove('text-slate-400');
+                this.classList.add('bg-blue-600', 'text-white');
+                document.getElementById('signup-tab').classList.remove('bg-blue-600', 'text-white');
+                document.getElementById('signup-tab').classList.add('text-slate-400');
+                document.getElementById('auth-title').textContent = 'Welcome Back';
+                document.getElementById('auth-subtitle').textContent = 'Login to access your profile';
+            });
+            
+            document.getElementById('signup-tab').addEventListener('click', function() {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('signup-form').classList.remove('hidden');
+                this.classList.remove('text-slate-400');
+                this.classList.add('bg-blue-600', 'text-white');
+                document.getElementById('login-tab').classList.remove('bg-blue-600', 'text-white');
+                document.getElementById('login-tab').classList.add('text-slate-400');
+                document.getElementById('auth-title').textContent = 'Create Account';
+                document.getElementById('auth-subtitle').textContent = 'Sign up to start practicing';
+            });
+            
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                Storage.remove(USER_KEY);
+                currentUser = null;
+                updateNavbar();
+                showPage('landing-page');
+            });
+            
+            // Profile dropdown
+            document.getElementById('profile-btn').addEventListener('click', function() {
+                const dropdown = document.getElementById('dropdown-menu');
+                dropdown.classList.toggle('hidden');
+            });
+            
+            document.getElementById('view-profile').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('profile-page');
+                loadProfilePage();
+                document.getElementById('dropdown-menu').classList.add('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#profile-dropdown')) {
+                    document.getElementById('dropdown-menu').classList.add('hidden');
+                }
+            });
+        }
 
-            return (
-                <div className="min-h-screen flex items-center justify-center relative p-4">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-[#020617] to-[#020617] -z-10"></div>
-                    <button onClick={onBack} className="absolute top-6 left-6 text-slate-400 hover:text-white flex items-center gap-2">
-                        <SimpleIcon name="ChevronLeft" size={20} /> Back to Home
-                    </button>
-
-                    <div className="w-full max-w-md glass-panel p-8 rounded-2xl animate-enter">
-                        <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
-                            <p className="text-slate-400">Login to access your profile</p>
+        // --- LANDING PAGE ---
+        function initLandingPage() {
+            // Populate company grid
+            const companyGrid = document.getElementById('company-grid');
+            companyGrid.innerHTML = '';
+            
+            COMPANIES.forEach(company => {
+                const button = document.createElement('button');
+                button.className = 'p-4 rounded-xl glass-card flex flex-col items-center gap-3 group border border-white/5 hover:border-blue-500/50 transition';
+                button.innerHTML = `
+                    <div class="w-14 h-14 rounded-full ${company.bg} flex items-center justify-center text-2xl font-bold ${company.color} group-hover:scale-110 transition duration-300 shadow-lg">
+                        <img src="${company.logo}" alt="${company.name}" class="company-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='${company.name[0]}';">
+                    </div>
+                    <span class="font-semibold group-hover:text-blue-400 transition">${company.name}</span>
+                `;
+                button.addEventListener('click', () => {
+                    if (!currentUser) {
+                        showPage('auth-page');
+                        return;
+                    }
+                    interviewConfig = { company };
+                    Storage.set(INTERVIEW_CONFIG_KEY, interviewConfig);
+                    showPage('setup-page');
+                    initSetupWizard();
+                });
+                companyGrid.appendChild(button);
+            });
+            
+            // Populate marquee
+            const marqueeContent = document.querySelector('.marquee-content');
+            marqueeContent.innerHTML = '';
+            
+            // Add companies multiple times for seamless scrolling
+            for (let i = 0; i < 3; i++) {
+                COMPANIES.forEach(company => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center gap-3 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition duration-300';
+                    item.innerHTML = `
+                        <div class="w-10 h-10 rounded-lg ${company.bg} flex items-center justify-center font-bold text-xl ${company.color}">
+                            <img src="${company.logo}" alt="${company.name}" class="company-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='${company.name[0]}';">
                         </div>
+                        <span class="text-xl font-bold text-slate-300">${company.name}</span>
+                    `;
+                    marqueeContent.appendChild(item);
+                });
+            }
+            
+            // Button event listeners
+            document.getElementById('get-started-btn').addEventListener('click', () => {
+                if (!currentUser) {
+                    showPage('auth-page');
+                    return;
+                }
+                showPage('setup-page');
+                initSetupWizard();
+            });
+            
+            document.getElementById('start-simulation-btn').addEventListener('click', () => {
+                if (!currentUser) {
+                    showPage('auth-page');
+                    return;
+                }
+                showPage('setup-page');
+                initSetupWizard();
+            });
+            
+            document.getElementById('demo-btn').addEventListener('click', () => {
+                document.getElementById('video-modal').classList.remove('hidden');
+                document.getElementById('demo-video').play();
+            });
+            
+            document.getElementById('login-btn').addEventListener('click', () => {
+                showPage('auth-page');
+            });
+            
+            document.getElementById('auth-back-btn').addEventListener('click', () => {
+                showPage('landing-page');
+            });
+            
+            document.getElementById('profile-back-btn').addEventListener('click', () => {
+                showPage('landing-page');
+            });
+            
+            document.getElementById('close-modal-btn').addEventListener('click', () => {
+                document.getElementById('video-modal').classList.add('hidden');
+                document.getElementById('demo-video').pause();
+            });
+        }
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Username</label>
-                                <input 
-                                    type="text" 
-                                    value={user} 
-                                    onChange={e => setUser(e.target.value)}
-                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                                    placeholder="Enter username"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Password</label>
-                                <input 
-                                    type="password" 
-                                    value={pass} 
-                                    onChange={e => setPass(e.target.value)}
-                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                                    placeholder="Enter password"
-                                />
+        // --- PROFILE PAGE ---
+        function loadProfilePage() {
+            const profileName = document.getElementById('profile-name');
+            const profileUsername = document.getElementById('profile-username');
+            const profileStatus = document.getElementById('profile-status');
+            const profileAvatar = document.getElementById('profile-avatar');
+            const interviewCount = document.getElementById('interview-count');
+            const avgScore = document.getElementById('avg-score');
+            const improvementRate = document.getElementById('improvement-rate');
+            const historyContainer = document.getElementById('history-container');
+            
+            if (currentUser) {
+                profileName.textContent = currentUser.name;
+                profileUsername.textContent = `@${currentUser.username}`;
+                profileStatus.textContent = `Status: ${currentUser.status.charAt(0).toUpperCase() + currentUser.status.slice(1)}`;
+                profileAvatar.src = currentUser.avatar;
+                
+                // Calculate stats
+                interviewCount.textContent = interviewHistory.length;
+                
+                if (interviewHistory.length > 0) {
+                    const totalScore = interviewHistory.reduce((sum, session) => sum + session.score, 0);
+                    const averageScore = Math.round(totalScore / interviewHistory.length);
+                    avgScore.textContent = `${averageScore}%`;
+                    
+                    // Calculate improvement rate (mock calculation)
+                    if (interviewHistory.length > 1) {
+                        const firstScore = interviewHistory[interviewHistory.length - 1].score;
+                        const latestScore = interviewHistory[0].score;
+                        const improvement = Math.round(((latestScore - firstScore) / firstScore) * 100);
+                        improvementRate.textContent = `${improvement > 0 ? '+' : ''}${improvement}%`;
+                    } else {
+                        improvementRate.textContent = '+0%';
+                    }
+                } else {
+                    avgScore.textContent = '0%';
+                    improvementRate.textContent = '+0%';
+                }
+                
+                // Populate history
+                historyContainer.innerHTML = '';
+                
+                if (interviewHistory.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="text-center py-12 text-slate-500 bg-slate-900/50 rounded-xl border border-dashed border-slate-800">
+                            No interviews taken yet. Start your first simulation!
+                        </div>
+                    `;
+                } else {
+                    interviewHistory.forEach(session => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'glass-card p-6 rounded-xl flex flex-col md:flex-row gap-6 border border-white/5';
+                        historyItem.innerHTML = `
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="font-bold text-lg">${session.company}</span>
+                                    <span class="text-slate-400">•</span>
+                                    <span class="text-slate-300">${session.role}</span>
+                                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30">${session.round}</span>
+                                </div>
+                                <div class="text-sm text-slate-500 mb-4">${session.date}</div>
+                                
+                                <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
+                                    <h4 class="font-bold text-yellow-400 text-sm mb-2 flex items-center gap-2">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                            <polyline points="17 6 23 6 23 12"/>
+                                        </svg>
+                                        Improvement Plan
+                                    </h4>
+                                    <p class="text-sm text-slate-300 italic">"${session.improvement}"</p>
+                                </div>
                             </div>
                             
-                            {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-
-                            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-blue-500/20">
-                                Login
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            );
-        };
-
-        const ProfilePage = ({ user, history, onBack }) => {
-            return (
-                <div className="min-h-screen bg-[#020617] p-4 md:p-8">
-                    <div className="max-w-6xl mx-auto">
-                        <button onClick={onBack} className="mb-6 text-slate-400 hover:text-white flex items-center gap-2">
-                            <SimpleIcon name="ChevronLeft" size={20} /> Back to Dashboard
-                        </button>
-
-                        <div className="glass-panel p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 mb-8">
-                            <img src={user.avatar} alt="Profile" className="w-32 h-32 rounded-full border-4 border-blue-500/30 bg-slate-800" />
-                            <div className="text-center md:text-left flex-1">
-                                <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
-                                <p className="text-slate-400">@{user.username}</p>
-                                <div className="flex gap-4 mt-4 justify-center md:justify-start">
-                                    <div className="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
-                                        <div className="text-2xl font-bold text-white">{history.length}</div>
-                                        <div className="text-xs text-slate-400 uppercase">Interviews</div>
-                                    </div>
-                                    <div className="bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
-                                        <div className="text-2xl font-bold text-green-400">
-                                            {history.length > 0 ? Math.round(history.reduce((a,b) => a + b.score, 0) / history.length) : 0}%
-                                        </div>
-                                        <div className="text-xs text-slate-400 uppercase">Avg Score</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <SimpleIcon name="Briefcase" size={24} className="text-blue-400" /> Interview History
-                        </h2>
-                        
-                        <div className="space-y-4">
-                            {history.length === 0 ? (
-                                <div className="text-center py-12 text-slate-500 bg-slate-900/50 rounded-xl border border-dashed border-slate-800">
-                                    No interviews taken yet. Start your first simulation!
-                                </div>
-                            ) : (
-                                history.map((session, idx) => (
-                                    <div key={idx} className="glass-card p-6 rounded-xl flex flex-col md:flex-row gap-6 border border-white/5">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className="font-bold text-lg">{session.company}</span>
-                                                <span className="text-slate-400">•</span>
-                                                <span className="text-slate-300">{session.role}</span>
-                                                <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30">{session.round}</span>
-                                            </div>
-                                            <div className="text-sm text-slate-500 mb-4">{session.date}</div>
-                                            
-                                            <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
-                                                <h4 className="font-bold text-yellow-400 text-sm mb-2 flex items-center gap-2">
-                                                    <SimpleIcon name="TrendingUp" size={16} /> Improvement Plan
-                                                </h4>
-                                                <p className="text-sm text-slate-300 italic">"{session.improvement}"</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex flex-col items-center justify-center min-w-[100px] border-l border-white/10 pl-6">
-                                            <div className="text-4xl font-bold text-white mb-1">{session.score}</div>
-                                            <div className="text-xs text-slate-500 uppercase">Score</div>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const LandingPage = ({ onStart, onLoginClick, user, onProfileClick, onDemoClick }) => {
-            return (
-                <div className="min-h-screen relative flex flex-col">
-                    <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
-
-                    <nav className="z-10 px-8 py-6 flex justify-between items-center glass-panel mx-4 mt-4 rounded-2xl">
-                        <div className="flex items-center gap-2 font-bold text-2xl tracking-tighter">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center">
-                                <SimpleIcon name="Sparkles" size={20} className="text-white" />
-                            </div>
-                            Mock<span className="text-blue-400">AI</span>
-                        </div>
-                        
-                        {user ? (
-                            <div className="flex items-center gap-6">
-                                <a href="#" className="text-slate-300 hover:text-white font-medium transition">Home</a>
-                                <a href="#" className="text-slate-300 hover:text-white font-medium transition">Features</a>
-                                <button onClick={onProfileClick} className="flex items-center gap-2 pl-6 border-l border-white/10">
-                                    <img src={user.avatar} alt="User" className="w-8 h-8 rounded-full border border-blue-500/50" />
-                                    <span className="font-medium">{user.name}</span>
+                            <div class="flex flex-col items-center justify-center min-w-[100px] border-l border-white/10 pl-6">
+                                <div class="text-4xl font-bold text-white mb-1">${session.score}</div>
+                                <div class="text-xs text-slate-500 uppercase">Score</div>
+                                <button class="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded transition">
+                                    View Details
                                 </button>
                             </div>
-                        ) : (
-                            <div className="flex gap-4">
-                                 <button onClick={onLoginClick} className="px-5 py-2 text-slate-300 hover:text-white font-medium">Login</button>
-                                 <button onClick={() => onStart()} className="px-5 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200 transition shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                                    Get Started
-                                </button>
-                            </div>
-                        )}
-                    </nav>
+                        `;
+                        historyContainer.appendChild(historyItem);
+                    });
+                }
+            }
+            
+            // Change profile photo functionality
+            document.getElementById('change-photo-btn').addEventListener('click', function() {
+                document.getElementById('change-photo-modal').classList.remove('hidden');
+            });
+        }
 
-                    <main className="flex-1 flex flex-col items-center justify-center text-center px-4 relative z-10 mt-12 mb-12">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs font-bold mb-6 animate-pulse">
-                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                            New: DeepSeek & OpenAI Agents Added
-                        </div>
-                        
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 max-w-5xl leading-[1.1] tracking-tight">
-                            Master Your Next Interview with <br className="hidden md:block"/>
-                            <span className="text-gradient">AI Simulation</span>
-                        </h1>
-                        
-                        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
-                            Practice real company-specific interviews with intelligent AI Agents. Get real-time feedback on technical skills, voice modulation, and body language.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16">
-                            <button onClick={() => onStart()} className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-lg hover:scale-105 transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
-                                Start Free Simulation
-                                <SimpleIcon name="ChevronRight" size={20} className="group-hover:translate-x-1 transition" />
-                            </button>
-                            <button onClick={onDemoClick} className="px-8 py-4 glass-panel rounded-xl font-bold text-lg hover:bg-white/5 transition flex items-center justify-center gap-2">
-                                <div className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
-                                    <SimpleIcon name="Play" size={10} className="ml-0.5 fill-white" />
-                                </div>
-                                View Demo
-                            </button>
-                        </div>
-                    </main>
-
-                    <div className="w-full py-8 border-y border-white/5 bg-black/20 backdrop-blur-sm mb-12">
-                        <div className="marquee-wrapper">
-                            <div className="marquee-content gap-16 px-8">
-                                {[...COMPANIES, ...COMPANIES, ...COMPANIES].map((company, i) => (
-                                    <div key={i} className="flex items-center gap-3 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition duration-300">
-                                        <div className={`w-10 h-10 rounded-lg ${company.bg} flex items-center justify-center font-bold text-xl ${company.color}`}>
-                                            {company.name[0]}
-                                        </div>
-                                        <span className="text-xl font-bold text-slate-300">{company.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="max-w-6xl mx-auto px-4 pb-20 w-full animate-enter">
-                        <div className="text-center mb-10">
-                            <h2 className="text-3xl font-bold mb-4">Select a Company to Interview</h2>
-                            <p className="text-slate-400">Choose your target and start practicing immediately.</p>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {COMPANIES.map(c => (
-                                <button 
-                                    key={c.name}
-                                    onClick={() => onStart(c)}
-                                    className="p-4 rounded-xl glass-card flex flex-col items-center gap-3 group border border-white/5 hover:border-blue-500/50 transition"
-                                >
-                                    <div className={`w-14 h-14 rounded-full ${c.bg} flex items-center justify-center text-2xl font-bold ${c.color} group-hover:scale-110 transition duration-300 shadow-lg`}>
-                                        {c.name[0]}
-                                    </div>
-                                    <span className="font-semibold group-hover:text-blue-400 transition">{c.name}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <footer className="w-full py-6 flex justify-center gap-6 text-slate-500 text-sm border-t border-white/5 bg-black/20">
-                        <span>© 2025 MockAI Platform</span>
-                        <a href="#" className="hover:text-white">Privacy</a>
-                        <a href="#" className="hover:text-white">Terms</a>
-                    </footer>
-                </div>
-            );
-        };
-
-        const SetupWizard = ({ initialCompany, onComplete, onBack }) => {
-            const [step, setStep] = useState(initialCompany ? 2 : 1);
-            const [data, setData] = useState({ company: initialCompany || null, role: null, round: null, resume: null, duration: 5 });
-            const [isDragging, setIsDragging] = useState(false);
-            const [isProcessing, setIsProcessing] = useState(false);
-
+        // --- SETUP WIZARD ---
+        function initSetupWizard() {
             const steps = [
                 { num: 1, label: "Company" },
                 { num: 2, label: "Role" },
@@ -475,722 +1298,987 @@
                 { num: 4, label: "Resume" },
                 { num: 5, label: "Details" }
             ];
-
-            const next = () => {
-                if (step === 4) {
-                    setIsProcessing(true);
-                    setTimeout(() => {
-                        setIsProcessing(false);
-                        setStep(s => Math.min(s + 1, 5));
-                    }, 1500);
-                } else {
-                    setStep(s => Math.min(s + 1, 5));
+            
+            let currentStep = interviewConfig?.company ? 2 : 1;
+            let setupData = interviewConfig || { company: null, role: null, round: null, resume: null, duration: 6 };
+            
+            // Render step indicators
+            const stepContainer = document.querySelector('#setup-page .flex.justify-between');
+            stepContainer.innerHTML = `
+                <div class="absolute left-0 top-1/2 w-full h-1 bg-slate-800 -z-10 rounded-full"></div>
+                <div id="step-progress" class="absolute left-0 top-1/2 h-1 bg-blue-500 -z-10 rounded-full transition-all duration-500" style="width: ${((currentStep-1)/4)*100}%"></div>
+            `;
+            
+            steps.forEach((step, idx) => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'flex flex-col items-center gap-2 bg-[#020617] px-2 z-10';
+                stepEl.innerHTML = `
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all duration-300
+                        ${currentStep >= step.num ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-800 border-slate-700 text-slate-500'}">
+                        ${currentStep > step.num ? 
+                            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : 
+                            step.num}
+                    </div>
+                    <span class="text-xs font-semibold uppercase tracking-wider hidden md:block ${currentStep >= step.num ? 'text-blue-400' : 'text-slate-600'}">${step.label}</span>
+                `;
+                stepContainer.appendChild(stepEl);
+            });
+            
+            // Render current step
+            renderStep(currentStep);
+            
+            // Step navigation
+            document.getElementById('prev-step-btn').addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateStepProgress();
+                    renderStep(currentStep);
                 }
-            };
-            const prev = () => setStep(s => Math.max(s - 1, 1));
-
-            const StepCompany = () => (
-                <div className="animate-enter">
-                    <h2 className="text-3xl font-bold mb-6 text-center">Target Company</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        {COMPANIES.map(c => (
-                            <button 
-                                key={c.name}
-                                onClick={() => { setData({...data, company: c}); setStep(2); }}
-                                className={`p-4 rounded-xl border transition flex flex-col items-center gap-3 group
-                                    ${data.company?.name === c.name 
-                                        ? 'bg-blue-600/20 border-blue-500 ring-1 ring-blue-500' 
-                                        : 'glass-card border-transparent hover:border-slate-500'}`}
-                            >
-                                <div className={`w-12 h-12 rounded-full ${c.bg} flex items-center justify-center text-xl font-bold ${c.color} group-hover:scale-110 transition`}>
-                                    {c.name[0]}
-                                </div>
-                                <span className="font-semibold">{c.name}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            );
-
-            const StepRole = () => (
-                <div className="animate-enter">
-                    <h2 className="text-3xl font-bold mb-6 text-center">Select Role</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {ROLES.map(r => (
-                            <button 
-                                key={r.id}
-                                onClick={() => { setData({...data, role: r}); setStep(3); }}
-                                className={`p-6 rounded-xl border text-left flex items-start gap-4 transition group
-                                    ${data.role?.id === r.id 
-                                        ? 'bg-blue-600/20 border-blue-500' 
-                                        : 'glass-card border-transparent hover:border-slate-500'}`}
-                            >
-                                <div className={`p-3 rounded-lg bg-slate-800 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition`}>
-                                    <SimpleIcon name={r.icon} size={24} />
-                                </div>
-                                <div>
-                                    <div className="font-bold text-lg mb-1">{r.title}</div>
-                                    <div className="text-sm text-slate-400">{r.desc}</div>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            );
-
-            // NEW: Round Selection Step
-            const StepRound = () => (
-                <div className="animate-enter">
-                    <h2 className="text-3xl font-bold mb-6 text-center">Select Interview Round</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {ROUNDS.map(r => (
-                            <button 
-                                key={r.id}
-                                onClick={() => { 
-                                    // If technical round, set duration to 15m default
-                                    setData({...data, round: r, duration: r.isTech ? 15 : 5}); 
-                                    setStep(4); 
-                                }}
-                                className={`p-6 rounded-xl border text-left flex flex-col gap-2 transition group
-                                    ${data.round?.id === r.id 
-                                        ? 'bg-blue-600/20 border-blue-500 ring-1 ring-blue-500' 
-                                        : 'glass-card border-transparent hover:border-slate-500'}`}
-                            >
-                                <div className="flex justify-between items-start">
-                                    <h3 className="font-bold text-lg">{r.title}</h3>
-                                    {r.isTech && <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded border border-purple-500/30">CODING</span>}
-                                </div>
-                                <p className="text-sm text-slate-400">{r.desc}</p>
-                                <div className="mt-2 text-xs font-mono text-blue-300 bg-blue-900/20 inline-block px-2 py-1 rounded self-start">
-                                    Agent: {r.agent}
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            );
-
-            const StepResume = () => (
-                <div className="animate-enter text-center">
-                    <h2 className="text-3xl font-bold mb-2">Upload Resume</h2>
-                    <p className="text-slate-400 mb-8">The {data.round.agent} will analyze your background.</p>
+            });
+            
+            document.getElementById('cancel-setup-btn').addEventListener('click', () => {
+                showPage('landing-page');
+            });
+            
+            function updateStepProgress() {
+                document.getElementById('step-progress').style.width = `${((currentStep-1)/4)*100}%`;
+                
+                // Update step indicators
+                const stepIndicators = document.querySelectorAll('#setup-page .flex.flex-col.items-center');
+                stepIndicators.forEach((indicator, idx) => {
+                    const stepNum = idx + 1;
+                    const circle = indicator.querySelector('div');
+                    const label = indicator.querySelector('span');
                     
-                    {isProcessing ? (
-                        <div className="h-64 flex flex-col items-center justify-center gap-4">
-                            <SimpleIcon name="Loader" size={48} className="text-blue-500 animate-spin-slow" />
-                            <div className="text-lg font-bold animate-pulse">Scanning Resume...</div>
-                            <div className="text-sm text-slate-400">Extracting keywords for {data.round.title}</div>
-                        </div>
-                    ) : (
-                        <div 
-                            className={`max-w-xl mx-auto h-64 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-4 transition cursor-pointer relative overflow-hidden
-                                ${isDragging ? 'border-blue-500 bg-blue-500/10' : 'border-slate-700 bg-slate-900/50 hover:border-slate-500'}`}
-                            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                            onDragLeave={() => setIsDragging(false)}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                setIsDragging(false);
-                                if(e.dataTransfer.files[0]) {
-                                    setData({...data, resume: e.dataTransfer.files[0].name});
-                                    setTimeout(next, 800);
-                                }
-                            }}
-                        >
-                            <input 
-                                type="file" 
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                onChange={(e) => {
-                                    if(e.target.files[0]) {
-                                        setData({...data, resume: e.target.files[0].name});
-                                        setTimeout(next, 800);
-                                    }
-                                }} 
-                            />
-                            
-                            {data.resume ? (
-                                <div className="flex flex-col items-center text-green-400">
-                                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-2">
-                                        <SimpleIcon name="Check" size={32} />
-                                    </div>
-                                    <span className="font-bold text-lg">{data.resume}</span>
-                                    <span className="text-sm">Uploaded Successfully</span>
+                    if (currentStep >= stepNum) {
+                        circle.className = circle.className.replace('bg-slate-800 border-slate-700 text-slate-500', 'bg-blue-600 border-blue-600 text-white');
+                        label.className = label.className.replace('text-slate-600', 'text-blue-400');
+                        
+                        if (currentStep > stepNum) {
+                            circle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                        } else {
+                            circle.innerHTML = stepNum;
+                        }
+                    } else {
+                        circle.className = circle.className.replace('bg-blue-600 border-blue-600 text-white', 'bg-slate-800 border-slate-700 text-slate-500');
+                        label.className = label.className.replace('text-blue-400', 'text-slate-600');
+                        circle.innerHTML = stepNum;
+                    }
+                });
+            }
+            
+            function renderStep(step) {
+                const stepContent = document.getElementById('step-content');
+                
+                switch(step) {
+                    case 1:
+                        stepContent.innerHTML = `
+                            <div class="animate-enter">
+                                <h2 class="text-3xl font-bold mb-6 text-center">Target Company</h2>
+                                <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="company-selection">
+                                    ${COMPANIES.map(c => `
+                                        <button 
+                                            class="p-4 rounded-xl border transition flex flex-col items-center gap-3 group
+                                                ${setupData.company?.name === c.name 
+                                                    ? 'bg-blue-600/20 border-blue-500 ring-1 ring-blue-500' 
+                                                    : 'glass-card border-transparent hover:border-slate-500'}"
+                                            data-company='${JSON.stringify(c).replace(/'/g, "&#39;")}'
+                                        >
+                                            <div class="w-12 h-12 rounded-full ${c.bg} flex items-center justify-center text-xl font-bold ${c.color} group-hover:scale-110 transition">
+                                                <img src="${c.logo}" alt="${c.name}" class="company-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='${c.name[0]}';">
+                                            </div>
+                                            <span class="font-semibold">${c.name}</span>
+                                        </button>
+                                    `).join('')}
                                 </div>
-                            ) : (
-                                <>
-                                    <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center text-blue-400">
-                                        <SimpleIcon name="Upload" size={32} />
+                            </div>
+                        `;
+                        
+                        document.querySelectorAll('#company-selection button').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const company = JSON.parse(this.getAttribute('data-company').replace(/&#39;/g, "'"));
+                                setupData.company = company;
+                                currentStep = 2;
+                                updateStepProgress();
+                                renderStep(2);
+                            });
+                        });
+                        break;
+                        
+                    case 2:
+                        stepContent.innerHTML = `
+                            <div class="animate-enter">
+                                <h2 class="text-3xl font-bold mb-6 text-center">Select Role</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="role-selection">
+                                    ${ROLES.map(r => `
+                                        <button 
+                                            class="p-6 rounded-xl border text-left flex items-start gap-4 transition group
+                                                ${setupData.role?.id === r.id 
+                                                    ? 'bg-blue-600/20 border-blue-500' 
+                                                    : 'glass-card border-transparent hover:border-slate-500'}"
+                                            data-role='${JSON.stringify(r).replace(/'/g, "&#39;")}'
+                                        >
+                                            <div class="p-3 rounded-lg bg-slate-800 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    ${getIconPath(r.icon)}
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-lg mb-1">${r.title}</div>
+                                                <div class="text-sm text-slate-400">${r.desc}</div>
+                                            </div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.querySelectorAll('#role-selection button').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const role = JSON.parse(this.getAttribute('data-role').replace(/&#39;/g, "'"));
+                                setupData.role = role;
+                                currentStep = 3;
+                                updateStepProgress();
+                                renderStep(3);
+                            });
+                        });
+                        break;
+                        
+                    case 3:
+                        stepContent.innerHTML = `
+                            <div class="animate-enter">
+                                <h2 class="text-3xl font-bold mb-6 text-center">Select Interview Round</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="round-selection">
+                                    ${ROUNDS.map(r => `
+                                        <button 
+                                            class="p-6 rounded-xl border text-left flex flex-col gap-2 transition group
+                                                ${setupData.round?.id === r.id 
+                                                    ? 'bg-blue-600/20 border-blue-500 ring-1 ring-blue-500' 
+                                                    : 'glass-card border-transparent hover:border-slate-500'}"
+                                            data-round='${JSON.stringify(r).replace(/'/g, "&#39;")}'
+                                        >
+                                            <div class="flex justify-between items-start">
+                                                <h3 class="font-bold text-lg">${r.title}</h3>
+                                                ${r.isTech ? '<span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded border border-purple-500/30">CODING</span>' : ''}
+                                            </div>
+                                            <p class="text-sm text-slate-400">${r.desc}</p>
+                                            <div class="mt-2 text-xs font-mono text-blue-300 bg-blue-900/20 inline-block px-2 py-1 rounded self-start">
+                                                Agent: ${r.agent}
+                                            </div>
+                                            <div class="mt-2 text-xs text-slate-500">
+                                                Duration: ${r.duration} minutes
+                                            </div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.querySelectorAll('#round-selection button').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const round = JSON.parse(this.getAttribute('data-round').replace(/&#39;/g, "'"));
+                                setupData.round = round;
+                                setupData.duration = round.duration;
+                                currentStep = 4;
+                                updateStepProgress();
+                                renderStep(4);
+                            });
+                        });
+                        break;
+                        
+                    case 4:
+                        stepContent.innerHTML = `
+                            <div class="animate-enter text-center">
+                                <h2 class="text-3xl font-bold mb-2">Upload Resume</h2>
+                                <p class="text-slate-400 mb-8">The ${setupData.round.agent} will analyze your background.</p>
+                                
+                                <div id="resume-upload" class="max-w-xl mx-auto h-64 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-4 transition cursor-pointer relative overflow-hidden border-slate-700 bg-slate-900/50 hover:border-slate-500">
+                                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" id="resume-file" />
+                                    
+                                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center text-blue-400">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="17 8 12 3 7 8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-lg">Click or Drag Resume Here</p>
-                                        <p className="text-sm text-slate-500">PDF, DOCX up to 10MB</p>
+                                        <p class="font-bold text-lg">Click or Drag Resume Here</p>
+                                        <p class="text-sm text-slate-500">PDF, DOCX up to 10MB</p>
                                     </div>
-                                </>
-                            )}
-                        </div>
-                    )}
-                </div>
-            );
-
-            const StepTime = () => (
-                <div className="animate-enter text-center">
-                    <h2 className="text-3xl font-bold mb-6">Confirm Interview Details</h2>
-                    
-                    <div className="max-w-md mx-auto bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8 text-left">
-                        <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-700">
-                            <span className="text-slate-400">Agent</span>
-                            <span className="font-bold text-blue-400">{data.round.agent}</span>
-                        </div>
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-slate-400">Round Type</span>
-                            <span className="font-bold">{data.round.title}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-slate-400">Duration</span>
-                            <div className="flex items-center gap-2">
-                                <SimpleIcon name="Clock" size={16} className="text-slate-400" />
-                                <span className="font-bold text-xl">{data.duration} mins</span>
-                            </div>
-                        </div>
-                        {data.round.isTech && (
-                            <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded text-sm text-yellow-200 flex gap-2">
-                                <SimpleIcon name="AlertCircle" size={16} className="shrink-0 mt-0.5" />
-                                <div>
-                                    <strong>Technical Round:</strong> You will have a live coding environment. Submissions have a 3-min limit per question.
+                                </div>
+                                
+                                <div id="resume-processing" class="hidden h-64 flex flex-col items-center justify-center gap-4">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 animate-spin-slow">
+                                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                                    </svg>
+                                    <div class="text-lg font-bold animate-pulse">Scanning Resume...</div>
+                                    <div class="text-sm text-slate-400">Extracting keywords for ${setupData.round.title}</div>
+                                </div>
+                                
+                                <div id="resume-success" class="hidden h-64 flex flex-col items-center justify-center text-green-400">
+                                    <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-2">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-lg" id="resume-name"></span>
+                                    <span class="text-sm">Uploaded Successfully</span>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                    
-                    <button 
-                        onClick={() => onComplete(data)}
-                        className="px-12 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-green-500/20 transition hover:scale-105 flex items-center gap-2 mx-auto"
-                    >
-                        Enter Interview Room
-                        <SimpleIcon name="ChevronRight" size={20} />
-                    </button>
-                </div>
-            );
-
-            return (
-                <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-[#020617]"></div>
-                    
-                    <div className="w-full max-w-4xl glass-panel p-8 md:p-12 rounded-3xl relative z-10 min-h-[600px] flex flex-col">
-                        <div className="flex justify-between items-center mb-12 relative">
-                            <div className="absolute left-0 top-1/2 w-full h-1 bg-slate-800 -z-10 rounded-full"></div>
-                            <div className="absolute left-0 top-1/2 h-1 bg-blue-500 -z-10 rounded-full transition-all duration-500" style={{ width: `${((step-1)/4)*100}%` }}></div>
+                        `;
+                        
+                        const resumeUpload = document.getElementById('resume-upload');
+                        const resumeFile = document.getElementById('resume-file');
+                        const resumeProcessing = document.getElementById('resume-processing');
+                        const resumeSuccess = document.getElementById('resume-success');
+                        const resumeName = document.getElementById('resume-name');
+                        
+                        let isDragging = false;
+                        
+                        resumeUpload.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            isDragging = true;
+                            resumeUpload.classList.add('border-blue-500', 'bg-blue-500/10');
+                        });
+                        
+                        resumeUpload.addEventListener('dragleave', () => {
+                            isDragging = false;
+                            resumeUpload.classList.remove('border-blue-500', 'bg-blue-500/10');
+                        });
+                        
+                        resumeUpload.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            isDragging = false;
+                            resumeUpload.classList.remove('border-blue-500', 'bg-blue-500/10');
                             
-                            {steps.map((s, idx) => (
-                                <div key={s.num} className="flex flex-col items-center gap-2 bg-[#020617] px-2 z-10">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all duration-300
-                                        ${step >= s.num ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-800 border-slate-700 text-slate-500'}`}>
-                                        {step > s.num ? <SimpleIcon name="Check" size={18} /> : s.num}
+                            if(e.dataTransfer.files[0]) {
+                                handleResumeUpload(e.dataTransfer.files[0]);
+                            }
+                        });
+                        
+                        resumeFile.addEventListener('change', (e) => {
+                            if(e.target.files[0]) {
+                                handleResumeUpload(e.target.files[0]);
+                            }
+                        });
+                        
+                        function handleResumeUpload(file) {
+                            setupData.resume = file.name;
+                            resumeUpload.classList.add('hidden');
+                            resumeProcessing.classList.remove('hidden');
+                            
+                            setTimeout(() => {
+                                resumeProcessing.classList.add('hidden');
+                                resumeSuccess.classList.remove('hidden');
+                                resumeName.textContent = file.name;
+                                
+                                // Automatically proceed to details step after resume processing
+                                setTimeout(() => {
+                                    currentStep = 5;
+                                    updateStepProgress();
+                                    renderStep(5);
+                                }, 1500);
+                            }, 1500);
+                        }
+                        break;
+                        
+                    case 5:
+                        stepContent.innerHTML = `
+                            <div class="animate-enter text-center">
+                                <h2 class="text-3xl font-bold mb-6">Interview Details</h2>
+                                
+                                <div class="max-w-md mx-auto bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8 text-left">
+                                    <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-700">
+                                        <span class="text-slate-400">Company</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded ${setupData.company.bg} flex items-center justify-center text-xs font-bold ${setupData.company.color}">
+                                                <img src="${setupData.company.logo}" alt="${setupData.company.name}" class="company-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='${setupData.company.name[0]}';">
+                                            </div>
+                                            <span class="font-bold">${setupData.company.name}</span>
+                                        </div>
                                     </div>
-                                    <span className={`text-xs font-semibold uppercase tracking-wider hidden md:block ${step >= s.num ? 'text-blue-400' : 'text-slate-600'}`}>{s.label}</span>
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-slate-400">Role</span>
+                                        <span class="font-bold">${setupData.role.title}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-slate-400">Round</span>
+                                        <span class="font-bold">${setupData.round.title}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-slate-400">AI Agent</span>
+                                        <span class="font-bold text-blue-400">${setupData.round.agent}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-slate-400">Duration</span>
+                                        <div class="flex items-center gap-2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <polyline points="12 6 12 12 16 14"/>
+                                            </svg>
+                                            <span class="font-bold text-xl">${setupData.duration} mins</span>
+                                        </div>
+                                    </div>
+                                    ${setupData.round.isTech ? `
+                                    <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded text-sm text-yellow-200 flex gap-2">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <line x1="12" y1="8" x2="12" y2="12"/>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                        </svg>
+                                        <div>
+                                            <strong>Technical Round:</strong> 
+                                            <ul class="mt-1 ml-4 list-disc">
+                                                <li>5 minutes for code error solving</li>
+                                                <li>2 problems with 5 minutes each</li>
+                                                <li>5 minutes for code explanation</li>
+                                                <li>5 minutes for general questions</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    ` : ''}
                                 </div>
-                            ))}
-                        </div>
-
-                        <div className="flex-1">
-                            {step === 1 && <StepCompany />}
-                            {step === 2 && <StepRole />}
-                            {step === 3 && <StepRound />}
-                            {step === 4 && <StepResume />}
-                            {step === 5 && <StepTime />}
-                        </div>
-
-                        <div className="mt-8 flex justify-between border-t border-slate-800 pt-6">
-                            <button onClick={prev} disabled={step === 1 && !initialCompany} className="text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-medium">
-                                <SimpleIcon name="ChevronLeft" size={16} /> Back
-                            </button>
-                            <button onClick={onBack} className="text-sm text-red-400 hover:text-red-300">
-                                Cancel Setup
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- Realistic Human Avatar Canvas ---
-        const AvatarCanvas = ({ isSpeaking }) => {
-            const canvasRef = useRef(null);
-
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                let animationFrameId;
-                let t = 0;
-
-                const draw = () => {
-                    t += 0.05; // Slower, more natural time
-                    const w = canvas.width;
-                    const h = canvas.height;
-                    const cx = w / 2;
-                    const cy = h / 2;
-
-                    // Breathing motion (vertical shift)
-                    const breathY = Math.sin(t * 0.5) * 2; 
-                    // Head sway
-                    const swayX = Math.sin(t * 0.2) * 1.5;
-
-                    ctx.clearRect(0, 0, w, h);
-
-                    // 1. Background Office Blur (Abstract)
-                    const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-                    bgGrad.addColorStop(0, "#1e293b");
-                    bgGrad.addColorStop(1, "#0f172a");
-                    ctx.fillStyle = bgGrad;
-                    // ctx.fillRect(0, 0, w, h); // Optional bg fill
-
-                    // --- BODY (Shoulders) ---
-                    ctx.save();
-                    ctx.translate(0, breathY); 
-                    
-                    // Suit
-                    ctx.fillStyle = "#2c3e50"; // Professional Blue/Grey
-                    ctx.beginPath();
-                    ctx.ellipse(cx, cy + 160, 130, 70, 0, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Shirt Collar
-                    ctx.fillStyle = "#e2e8f0";
-                    ctx.beginPath();
-                    ctx.moveTo(cx - 35, cy + 110);
-                    ctx.lineTo(cx + 35, cy + 110);
-                    ctx.lineTo(cx, cy + 150);
-                    ctx.fill();
-                    
-                    // Neck
-                    ctx.fillStyle = "#dba889"; // Skin tone
-                    ctx.fillRect(cx - 28, cy + 70, 56, 50);
-                    // Neck Shadow
-                    ctx.fillStyle = "rgba(0,0,0,0.1)";
-                    ctx.fillRect(cx - 28, cy + 70, 56, 10);
-
-                    ctx.restore();
-
-                    // --- HEAD ---
-                    ctx.save();
-                    ctx.translate(swayX, breathY * 0.5); // Head moves slightly less than body
-
-                    // Face Base
-                    ctx.fillStyle = "#eac09e"; // Base Skin
-                    ctx.beginPath();
-                    ctx.ellipse(cx, cy + 10, 80, 100, 0, 0, Math.PI * 2); // Oval Face
-                    ctx.fill();
-
-                    // Beard/Shadow (Subtle)
-                    ctx.fillStyle = "rgba(50, 40, 30, 0.05)";
-                    ctx.beginPath();
-                    ctx.arc(cx, cy + 40, 75, 0.2 * Math.PI, 0.8 * Math.PI);
-                    ctx.fill();
-
-                    // Hair (Short, dark)
-                    ctx.fillStyle = "#1a1a1a";
-                    ctx.beginPath();
-                    ctx.arc(cx, cy - 10, 82, Math.PI, 0); // Top
-                    ctx.lineTo(cx + 80, cy + 20);
-                    ctx.quadraticCurveTo(cx + 82, cy - 30, cx, cy - 30); // Hairline
-                    ctx.quadraticCurveTo(cx - 82, cy - 30, cx - 80, cy + 20);
-                    ctx.fill();
-
-                    // Glasses (Tech CEO)
-                    ctx.strokeStyle = "#333";
-                    ctx.lineWidth = 3;
-                    // Left
-                    ctx.strokeRect(cx - 65, cy - 15, 50, 30);
-                    // Right
-                    ctx.strokeRect(cx + 15, cy - 15, 50, 30);
-                    // Bridge
-                    ctx.beginPath(); 
-                    ctx.moveTo(cx - 15, cy); 
-                    ctx.lineTo(cx + 15, cy); 
-                    ctx.stroke();
-
-                    // Eyes (Natural Blinking & Darting)
-                    // Darting logic
-                    let eyeX = 0;
-                    if (Math.sin(t * 0.1) > 0.9) eyeX = 2;
-                    else if (Math.sin(t * 0.1) < -0.9) eyeX = -2;
-
-                    // Blinking logic
-                    const blink = Math.sin(t * 0.8) > 0.98 ? 0.1 : 1; // Occasional blink
-
-                    ctx.fillStyle = "#fff"; // Sclera
-                    ctx.beginPath(); ctx.ellipse(cx - 40, cy, 12, 8 * blink, 0, 0, Math.PI * 2); ctx.fill();
-                    ctx.beginPath(); ctx.ellipse(cx + 40, cy, 12, 8 * blink, 0, 0, Math.PI * 2); ctx.fill();
-
-                    ctx.fillStyle = "#2a1a10"; // Iris/Pupil
-                    ctx.beginPath(); ctx.arc(cx - 40 + eyeX, cy, 5 * blink, 0, Math.PI * 2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(cx + 40 + eyeX, cy, 5 * blink, 0, Math.PI * 2); ctx.fill();
-
-                    // Nose
-                    ctx.strokeStyle = "#d1a079";
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(cx, cy + 10);
-                    ctx.lineTo(cx - 5, cy + 35);
-                    ctx.lineTo(cx + 5, cy + 35);
-                    ctx.stroke();
-
-                    // Mouth (Lip Sync)
-                    ctx.fillStyle = "#c58c6e"; // Lip Color
-                    let mouthH = 2;
-                    let mouthW = 25;
-                    if (isSpeaking) {
-                        // Complex movement for speech
-                        mouthH = 4 + Math.abs(Math.sin(t * 1.5)) * 10 + Math.sin(t * 3)*2;
-                        mouthW = 25 + Math.sin(t * 2) * 5;
-                    }
-
-                    ctx.beginPath();
-                    ctx.ellipse(cx, cy + 60, mouthW, mouthH, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Teeth (if speaking loud)
-                    if(mouthH > 8) {
-                        ctx.fillStyle = "#eee";
-                        ctx.fillRect(cx - 10, cy + 55, 20, 4);
-                    }
-
-                    ctx.restore();
-
-                    animationFrameId = requestAnimationFrame(draw);
-                };
-
-                draw();
-                return () => cancelAnimationFrame(animationFrameId);
-            }, [isSpeaking]);
-
-            return <canvas ref={canvasRef} width={400} height={400} className="w-full h-full object-contain drop-shadow-2xl" />;
-        };
-
-        // --- InterviewRoom (Real-time Logic) ---
-        const InterviewRoom = ({ config, onEnd }) => {
-            const [timeLeft, setTimeLeft] = useState(config.duration * 60);
-            const [taskTimeLeft, setTaskTimeLeft] = useState(3 * 60); // 3 min for task
-            const [micOn, setMicOn] = useState(true);
-            const [videoOn, setVideoOn] = useState(true);
-            const [isSpeaking, setIsSpeaking] = useState(false);
-            const [aiStatus, setAiStatus] = useState("speaking"); 
-            const [currentQuestion, setCurrentQuestion] = useState("Initializing...");
-            const [transcript, setTranscript] = useState([]);
-            const [code, setCode] = useState("// Write your solution here...\nfunction solution() {\n  \n}");
+                                
+                                <button 
+                                    id="start-interview-btn"
+                                    class="px-12 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-green-500/20 transition hover:scale-105 flex items-center gap-2 mx-auto"
+                                >
+                                    Start Interview
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                        
+                        document.getElementById('start-interview-btn').addEventListener('click', () => {
+                            Storage.set(INTERVIEW_CONFIG_KEY, setupData);
+                            interviewConfig = setupData;
+                            showPage('interview-page');
+                            initInterviewRoom();
+                        });
+                        break;
+                }
+                
+                // Update prev button state
+                document.getElementById('prev-step-btn').disabled = (currentStep === 1 && !interviewConfig?.company);
+            }
             
-            const videoRef = useRef(null);
+            function getIconPath(iconName) {
+                const icons = {
+                    Code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+                    Brain: '<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>',
+                    Sparkles: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h4"/><path d="M2 3h4"/>',
+                    Database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>'
+                };
+                
+                return icons[iconName] || '';
+            }
+        }
 
+        // --- INTERVIEW ROOM ---
+        function initInterviewRoom() {
+            if (!interviewConfig) {
+                interviewConfig = Storage.get(INTERVIEW_CONFIG_KEY);
+                if (!interviewConfig) {
+                    showPage('landing-page');
+                    return;
+                }
+            }
+            
+            // Set up UI based on config
+            document.getElementById('company-icon').className = `w-10 h-10 rounded ${interviewConfig.company.bg} flex items-center justify-center font-bold text-xl ${interviewConfig.company.color}`;
+            document.getElementById('company-icon').innerHTML = `<img src="${interviewConfig.company.logo}" alt="${interviewConfig.company.name}" class="company-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='${interviewConfig.company.name[0]}';">`;
+            document.getElementById('interview-title').textContent = `${interviewConfig.company.name} Interview`;
+            document.getElementById('interview-role').textContent = interviewConfig.role.title;
+            document.getElementById('interview-round').textContent = interviewConfig.round.title;
+            document.getElementById('agent-name').textContent = interviewConfig.round.agent;
+            
+            // Show/hide appropriate view
+            if (interviewConfig.round.isTech) {
+                document.getElementById('tech-interview-view').classList.remove('hidden');
+                document.getElementById('normal-interview-view').classList.add('hidden');
+                document.getElementById('task-timer').classList.remove('hidden');
+            } else {
+                document.getElementById('tech-interview-view').classList.add('hidden');
+                document.getElementById('normal-interview-view').classList.remove('hidden');
+                document.getElementById('task-timer').classList.add('hidden');
+            }
+            
+            // Initialize timers
+            let timeLeft = interviewConfig.duration * 60;
+            let taskTimeLeft = 5 * 60; // 5 min for task in technical rounds
+            let isSpeaking = false;
+            let aiStatus = "speaking"; 
+            let currentQuestion = "Initializing...";
+            
+            document.getElementById('current-question').textContent = `"${currentQuestion}"`;
+            document.getElementById('total-timer').textContent = `Total: ${formatTime(timeLeft)}`;
+            
+            if (interviewConfig.round.isTech) {
+                document.getElementById('task-timer').textContent = `Task: ${formatTime(taskTimeLeft)}`;
+            }
+            
             // Global Timer
-            useEffect(() => {
-                const timer = setInterval(() => {
-                    setTimeLeft(p => {
-                        if(p <= 0) { clearInterval(timer); onEnd(); return 0; }
-                        return p - 1;
-                    });
-                }, 1000);
-                return () => clearInterval(timer);
-            }, []);
-
+            const totalTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('total-timer').textContent = `Total: ${formatTime(timeLeft)}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(totalTimer);
+                    finishInterview();
+                }
+            }, 1000);
+            
             // Task Timer (Only for tech rounds)
-            useEffect(() => {
-                let timer;
-                if (config.round.isTech && aiStatus === 'listening') {
-                    timer = setInterval(() => {
-                        setTaskTimeLeft(p => Math.max(0, p - 1));
-                    }, 1000);
+            let taskTimer;
+            if (interviewConfig.round.isTech) {
+                taskTimer = setInterval(() => {
+                    if (aiStatus === 'listening') {
+                        taskTimeLeft--;
+                        document.getElementById('task-timer').textContent = `Task: ${formatTime(taskTimeLeft)}`;
+                        
+                        if (taskTimeLeft < 30) {
+                            document.getElementById('task-timer').classList.add('border-red-500', 'bg-red-500/20', 'text-red-400', 'animate-pulse');
+                            document.getElementById('task-timer').classList.remove('border-yellow-500/50', 'bg-yellow-500/10', 'text-yellow-200');
+                        }
+                        
+                        if (taskTimeLeft <= 0) {
+                            clearInterval(taskTimer);
+                        }
+                    }
+                }, 1000);
+            }
+            
+            // Initialize camera
+            const userVideo = document.getElementById('user-video');
+            const normalVideo = document.getElementById('normal-video');
+            let videoOn = true;
+            
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    userVideo.srcObject = stream;
+                    normalVideo.srcObject = stream;
+                })
+                .catch(err => {
+                    console.log("Camera mock mode");
+                    // Show video off indicators
+                    document.getElementById('video-off-indicator').classList.remove('hidden');
+                    document.getElementById('normal-video-off').classList.remove('hidden');
+                    videoOn = false;
+                });
+            
+            // Generate initial question
+            setTimeout(() => {
+                const q = MockBackend.generateQuestion(interviewConfig.company, interviewConfig.role, interviewConfig.round);
+                currentQuestion = q;
+                document.getElementById('current-question').textContent = `"${q}"`;
+                aiStatus = "listening";
+            }, 4000);
+            
+            // Control buttons
+            document.getElementById('mic-toggle').addEventListener('click', function() {
+                const isOn = this.classList.contains('bg-slate-800');
+                if (isOn) {
+                    this.classList.remove('bg-slate-800', 'hover:bg-slate-700');
+                    this.classList.add('bg-red-500', 'hover:bg-red-600');
+                    this.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                            <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+                        </svg>
+                    `;
+                } else {
+                    this.classList.remove('bg-red-500', 'hover:bg-red-600');
+                    this.classList.add('bg-slate-800', 'hover:bg-slate-700');
+                    this.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    `;
                 }
-                return () => clearInterval(timer);
-            }, [config.round.isTech, aiStatus]);
-
-            useEffect(() => {
-                if(videoOn && videoRef.current) {
-                    navigator.mediaDevices.getUserMedia({ video: true })
-                        .then(stream => { videoRef.current.srcObject = stream; })
-                        .catch(err => console.log("Camera mock mode"));
-                }
-            }, [videoOn]);
-
-            useEffect(() => {
-                // Initial startup
-                const q = MockBackend.generateQuestion(config.company, config.role, config.round);
-                setCurrentQuestion(q);
-                setTimeout(() => setAiStatus("listening"), 4000); 
-            }, []);
-
-            const formatTime = (s) => {
-                const min = Math.floor(s / 60);
-                const sec = s % 60;
-                return `${min}:${sec < 10 ? '0'+sec : sec}`;
-            };
-
-            const handleUserAction = async () => {
-                if (aiStatus === 'listening' && !isSpeaking) {
-                    setIsSpeaking(true);
-                } else if (isSpeaking) {
-                    setIsSpeaking(false);
-                    setAiStatus("thinking");
+            });
+            
+            document.getElementById('video-toggle').addEventListener('click', function() {
+                const isOn = this.classList.contains('bg-slate-800');
+                if (isOn) {
+                    this.classList.remove('bg-slate-800', 'hover:bg-slate-700');
+                    this.classList.add('bg-red-500', 'hover:bg-red-600');
+                    this.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                    `;
                     
-                    const userResponse = config.round.isTech ? `[Code Submitted]\n${code}` : "Candidate verbal answer...";
-                    setTranscript(prev => [...prev, { sender: "You", text: userResponse }]);
+                    // Hide video feeds
+                    document.getElementById('video-off-indicator').classList.remove('hidden');
+                    document.getElementById('normal-video-off').classList.remove('hidden');
+                    videoOn = false;
+                } else {
+                    this.classList.remove('bg-red-500', 'hover:bg-red-600');
+                    this.classList.add('bg-slate-800', 'hover:bg-slate-700');
+                    this.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                    `;
+                    
+                    // Show video feeds
+                    document.getElementById('video-off-indicator').classList.add('hidden');
+                    document.getElementById('normal-video-off').classList.add('hidden');
+                    videoOn = true;
+                }
+            });
+            
+            document.getElementById('answer-btn').addEventListener('click', async function() {
+                if (aiStatus === 'listening' && !isSpeaking) {
+                    // Start answering
+                    isSpeaking = true;
+                    this.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+                    this.classList.add('bg-green-600', 'hover:bg-green-500', 'animate-pulse');
+                    this.innerHTML = interviewConfig.round.isTech ? 'Submit Solution' : 'Finish Answer';
+                    
+                    // Start avatar speaking animation
+                    startAvatarSpeaking();
+                } else if (isSpeaking) {
+                    // Finish answering
+                    isSpeaking = false;
+                    this.classList.remove('bg-green-600', 'hover:bg-green-500', 'animate-pulse');
+                    this.classList.add('bg-slate-800', 'text-slate-500');
+                    this.disabled = true;
+                    this.innerHTML = 'Processing...';
+                    
+                    // Stop avatar speaking
+                    stopAvatarSpeaking();
+                    
+                    aiStatus = "thinking";
+                    document.getElementById('thinking-indicator').classList.remove('hidden');
                     
                     await MockBackend.analyzeResponse("dummy text");
                     
-                    const nextQ = MockBackend.generateQuestion(config.company, config.role, config.round);
-                    setCurrentQuestion(nextQ);
-                    setAiStatus("speaking");
-                    setTranscript(prev => [...prev, { sender: config.round.agent, text: nextQ }]);
+                    // Generate next question
+                    const nextQ = MockBackend.generateQuestion(interviewConfig.company, interviewConfig.role, interviewConfig.round);
+                    currentQuestion = nextQ;
+                    document.getElementById('current-question').textContent = `"${nextQ}"`;
+                    
+                    document.getElementById('thinking-indicator').classList.add('hidden');
+                    aiStatus = "speaking";
                     
                     // Reset task timer for next question
-                    setTaskTimeLeft(3 * 60);
+                    if (interviewConfig.round.isTech) {
+                        taskTimeLeft = 5 * 60;
+                        document.getElementById('task-timer').textContent = `Task: ${formatTime(taskTimeLeft)}`;
+                        document.getElementById('task-timer').classList.remove('border-red-500', 'bg-red-500/20', 'text-red-400', 'animate-pulse');
+                        document.getElementById('task-timer').classList.add('border-yellow-500/50', 'bg-yellow-500/10', 'text-yellow-200');
+                    }
                     
-                    setTimeout(() => setAiStatus("listening"), 4000);
+                    setTimeout(() => {
+                        aiStatus = "listening";
+                        this.classList.remove('bg-slate-800', 'text-slate-500');
+                        this.classList.add('bg-blue-600', 'hover:bg-blue-500');
+                        this.disabled = false;
+                        this.innerHTML = 'Start Answer';
+                    }, 4000);
                 }
-            };
-
-            return (
-                <div className="h-screen flex flex-col bg-[#0f1115] relative overflow-hidden">
-                    <header className="h-16 px-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-md z-20">
-                        <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded ${config.company.bg} flex items-center justify-center font-bold text-xl ${config.company.color}`}>
-                                {config.company.name[0]}
-                            </div>
-                            <div>
-                                <h1 className="font-bold text-white">{config.company.name} Interview</h1>
-                                <div className="flex items-center gap-2 text-xs text-slate-400">
-                                    <span>{config.role.title}</span>
-                                    <span>•</span>
-                                    <span className="text-blue-400 font-bold">{config.round.title}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex gap-4">
-                            {config.round.isTech && (
-                                <div className={`px-4 py-1 rounded-full border ${taskTimeLeft < 30 ? 'border-red-500 bg-red-500/20 text-red-400 animate-pulse' : 'border-yellow-500/50 bg-yellow-500/10 text-yellow-200'} font-mono font-bold flex items-center gap-2`}>
-                                    <SimpleIcon name="Clock" size={16} />
-                                    Task: {formatTime(taskTimeLeft)}
-                                </div>
-                            )}
-                            <div className={`px-4 py-1 rounded-full border border-slate-600 bg-slate-800 text-slate-300 font-mono font-bold`}>
-                                Total: {formatTime(timeLeft)}
-                            </div>
-                        </div>
-                    </header>
-
-                    <main className="flex-1 p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative h-[calc(100vh-5rem)]">
-                        
-                        {/* Left Side: AI Agent */}
-                        <div className="relative glass-panel rounded-2xl flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
-                            <div className="absolute top-4 left-4 bg-black/40 px-3 py-1 rounded-full text-xs font-bold text-blue-400 border border-blue-500/20 backdrop-blur-md z-10 flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                {config.round.agent}
-                            </div>
-                            
-                            <div className="w-[90%] max-w-[500px] aspect-square -mt-10">
-                                <AvatarCanvas isSpeaking={aiStatus === 'speaking'} />
-                            </div>
-
-                            <div className="absolute bottom-8 w-[90%] glass-card p-4 rounded-xl border-l-4 border-blue-500 animate-enter">
-                                <p className="text-slate-400 text-xs uppercase font-bold mb-1">Current Question</p>
-                                <p className="text-white text-lg font-medium leading-snug">"{currentQuestion}"</p>
-                                {aiStatus === 'thinking' && (
-                                    <div className="mt-2 flex items-center gap-2 text-purple-400 text-xs font-bold">
-                                        <SimpleIcon name="Loader" size={14} className="animate-spin" />
-                                        Processing Answer...
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Right Side: User / Code Editor */}
-                        <div className="flex flex-col gap-4 h-full">
-                            {config.round.isTech ? (
-                                // Technical Round View: Code Editor + Mini Camera
-                                <div className="flex-1 glass-panel rounded-2xl p-4 flex flex-col relative">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                                            <SimpleIcon name="Code" size={14} /> Live Code Editor
-                                        </span>
-                                        <span className="text-[10px] text-slate-500">JavaScript</span>
-                                    </div>
-                                    <textarea 
-                                        className="flex-1 bg-[#0d1117] text-green-400 font-mono-code p-4 rounded-lg resize-none focus:outline-none focus:ring-1 focus:ring-green-500/50 text-sm leading-relaxed"
-                                        value={code}
-                                        onChange={(e) => setCode(e.target.value)}
-                                        spellCheck="false"
-                                    />
-                                    {/* User Mini Cam */}
-                                    <div className="absolute bottom-4 right-4 w-32 h-24 bg-black rounded-lg overflow-hidden border border-white/20 shadow-2xl">
-                                        {videoOn ? <video ref={videoRef} autoPlay muted className="w-full h-full object-cover transform scale-x-[-1]" /> : <div className="w-full h-full flex items-center justify-center text-slate-600"><SimpleIcon name="VideoOff" size={20} /></div>}
-                                    </div>
-                                </div>
-                            ) : (
-                                // Normal Round View: Full Camera
-                                <div className="flex-1 relative glass-panel rounded-2xl bg-black overflow-hidden flex items-center justify-center group">
-                                    {videoOn ? <video ref={videoRef} autoPlay muted className="w-full h-full object-cover transform scale-x-[-1]" /> : <div className="flex flex-col items-center text-slate-600"><div className="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center mb-4"><SimpleIcon name="VideoOff" size={40} /></div><p>Camera Off</p></div>}
-                                    <div className="absolute bottom-4 left-4 text-white font-medium bg-black/50 px-2 py-1 rounded backdrop-blur-sm">You</div>
-                                </div>
-                            )}
-
-                            {/* Controls */}
-                            <div className="h-20 bg-slate-900/80 backdrop-blur-lg border border-white/10 rounded-2xl flex justify-between items-center px-6">
-                                <div className="flex gap-2">
-                                    <button onClick={() => setMicOn(!micOn)} className={`p-3 rounded-full transition ${micOn ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white'}`}>{micOn ? <SimpleIcon name="Mic" size={20} /> : <SimpleIcon name="MicOff" size={20} />}</button>
-                                    <button onClick={() => setVideoOn(!videoOn)} className={`p-3 rounded-full transition ${videoOn ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white'}`}>{videoOn ? <SimpleIcon name="Video" size={20} /> : <SimpleIcon name="VideoOff" size={20} />}</button>
-                                </div>
-
-                                <button 
-                                    onClick={handleUserAction} 
-                                    disabled={aiStatus === 'thinking' || aiStatus === 'speaking'} 
-                                    className={`h-12 px-8 rounded-xl font-bold transition flex items-center gap-2 shadow-lg ${isSpeaking ? 'bg-green-600 hover:bg-green-500 text-white animate-pulse' : aiStatus === 'speaking' || aiStatus === 'thinking' ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
-                                >
-                                    {isSpeaking ? (config.round.isTech ? "Submit Solution" : "Finish Answer") : "Start Answer"}
-                                </button>
-
-                                <button onClick={onEnd} className="p-3 rounded-full bg-red-600 hover:bg-red-700 text-white"><SimpleIcon name="PhoneOff" size={20} /></button>
-                            </div>
-                        </div>
-                    </main>
-                </div>
-            );
-        };
-
-        // --- ResultsPage (Reusable) ---
-        const ResultsPage = ({ config, onRestart }) => {
-            return (
-                <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
-                    <div className="w-full max-w-6xl h-[90vh] glass-panel rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl">
-                        <div className="w-full md:w-1/3 bg-slate-900/80 p-8 flex flex-col border-r border-white/5 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                            <h2 className="text-2xl font-bold mb-8">Performance Summary</h2>
-                            <div className="flex-1 flex flex-col items-center justify-center">
-                                <div className="relative w-48 h-48 mb-6">
-                                    <svg className="w-full h-full transform -rotate-90">
-                                        <circle cx="96" cy="96" r="88" className="text-slate-800 stroke-current" strokeWidth="12" fill="none"/>
-                                        <circle cx="96" cy="96" r="88" className="text-blue-500 stroke-current" strokeWidth="12" fill="none" strokeDasharray="552" strokeDashoffset="80" strokeLinecap="round"/>
-                                    </svg>
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center"><span className="text-5xl font-bold text-white">85</span><span className="text-sm text-slate-400 uppercase tracking-widest mt-1">Score</span></div>
-                                </div>
-                                <div className="text-center"><h3 className="text-xl font-bold text-white mb-2">Great Job!</h3><p className="text-slate-400 text-sm">You performed better than 72% of candidates for {config.role.title}.</p></div>
-                            </div>
-                            <button onClick={onRestart} className="w-full py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-200 transition">Start New Session</button>
-                        </div>
-                        <div className="flex-1 bg-slate-900/40 p-8 md:p-12 overflow-y-auto">
-                            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3"><div className="p-2 bg-purple-500/20 rounded-lg text-purple-400"><SimpleIcon name="Briefcase" size={24} /></div>Improvement Plan</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div className="glass-card p-6 rounded-xl border-l-4 border-green-500 bg-green-500/5">
-                                    <h3 className="font-bold text-green-400 mb-4 flex items-center gap-2"><SimpleIcon name="Check" size={18} /> Strengths</h3>
-                                    <ul className="space-y-3 text-sm text-slate-300">
-                                        <li className="flex gap-2"><span className="text-green-500">•</span> Strong understanding of {config.round.title}.</li>
-                                        <li className="flex gap-2"><span className="text-green-500">•</span> Clear communication using the STAR method.</li>
-                                    </ul>
-                                </div>
-                                <div className="glass-card p-6 rounded-xl border-l-4 border-yellow-500 bg-yellow-500/5">
-                                    <h3 className="font-bold text-yellow-400 mb-4 flex items-center gap-2"><SimpleIcon name="TrendingUp" size={18} /> Areas to Improve</h3>
-                                    <ul className="space-y-3 text-sm text-slate-300">
-                                        <li className="flex gap-2"><span className="text-yellow-500">•</span> Deepen knowledge on core concepts.</li>
-                                        <li className="flex gap-2"><span className="text-yellow-500">•</span> Reduce use of filler words ("um", "uh").</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- ROOT APP ---
-        const App = () => {
-            const [view, setView] = useState('landing');
-            const [user, setUser] = useState(null); // Auth state
-            const [config, setConfig] = useState(null);
-            const [showDemo, setShowDemo] = useState(false);
+            });
             
-            const [history, setHistory] = useState([
-                { id: 1, company: 'Google', role: 'Software Engineer', round: 'Tech Round 1', date: 'Oct 24, 2023', score: 85, improvement: 'Focus on edge cases.' },
-            ]);
-
-            const handleLogin = (userData) => {
-                setUser(userData);
-                setView('landing');
-            };
-
-            const handleFinishInterview = (resultConfig) => {
+            document.getElementById('end-interview-btn').addEventListener('click', () => {
+                clearInterval(totalTimer);
+                if (taskTimer) clearInterval(taskTimer);
+                finishInterview();
+            });
+            
+            function finishInterview() {
+                // Save interview result
                 const newEntry = {
-                    id: history.length + 1,
-                    company: resultConfig.company.name,
-                    role: resultConfig.role.title,
-                    round: resultConfig.round.title,
+                    id: interviewHistory.length + 1,
+                    company: interviewConfig.company.name,
+                    role: interviewConfig.role.title,
+                    round: interviewConfig.round.title,
                     date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                     score: Math.floor(Math.random() * (95 - 70) + 70),
-                    improvement: 'Work on conciseness.'
+                    improvement: 'Work on conciseness and technical depth. Practice more coding problems to improve speed and accuracy.'
                 };
-                setHistory([newEntry, ...history]);
-                setView('results');
+                
+                interviewHistory.unshift(newEntry);
+                Storage.set(HISTORY_KEY, interviewHistory);
+                
+                showPage('results-page');
+                initResultsPage();
+            }
+        }
+
+        // --- AVATAR CANVAS ---
+        function initAvatarCanvas() {
+            const canvas = document.getElementById('avatar-canvas');
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+            let t = 0;
+            let isSpeaking = false;
+
+            function draw() {
+                t += 0.05; // Slower, more natural time
+                const w = canvas.width;
+                const h = canvas.height;
+                const cx = w / 2;
+                const cy = h / 2;
+
+                // Breathing motion (vertical shift)
+                const breathY = Math.sin(t * 0.5) * 2; 
+                // Head sway
+                const swayX = Math.sin(t * 0.2) * 1.5;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // 1. Background Office Blur (Abstract)
+                const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+                bgGrad.addColorStop(0, "#1e293b");
+                bgGrad.addColorStop(1, "#0f172a");
+                ctx.fillStyle = bgGrad;
+                // ctx.fillRect(0, 0, w, h); // Optional bg fill
+
+                // --- BODY (Shoulders) ---
+                ctx.save();
+                ctx.translate(0, breathY); 
+                
+                // Suit
+                ctx.fillStyle = "#2c3e50"; // Professional Blue/Grey
+                ctx.beginPath();
+                ctx.ellipse(cx, cy + 160, 130, 70, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Shirt Collar
+                ctx.fillStyle = "#e2e8f0";
+                ctx.beginPath();
+                ctx.moveTo(cx - 35, cy + 110);
+                ctx.lineTo(cx + 35, cy + 110);
+                ctx.lineTo(cx, cy + 150);
+                ctx.fill();
+                
+                // Neck
+                ctx.fillStyle = "#dba889"; // Skin tone
+                ctx.fillRect(cx - 28, cy + 70, 56, 50);
+                // Neck Shadow
+                ctx.fillStyle = "rgba(0,0,0,0.1)";
+                ctx.fillRect(cx - 28, cy + 70, 56, 10);
+
+                ctx.restore();
+
+                // --- HEAD ---
+                ctx.save();
+                ctx.translate(swayX, breathY * 0.5); // Head moves slightly less than body
+
+                // Face Base
+                ctx.fillStyle = "#eac09e"; // Base Skin
+                ctx.beginPath();
+                ctx.ellipse(cx, cy + 10, 80, 100, 0, 0, Math.PI * 2); // Oval Face
+                ctx.fill();
+
+                // Beard/Shadow (Subtle)
+                ctx.fillStyle = "rgba(50, 40, 30, 0.05)";
+                ctx.beginPath();
+                ctx.arc(cx, cy + 40, 75, 0.2 * Math.PI, 0.8 * Math.PI);
+                ctx.fill();
+
+                // Hair (Short, dark)
+                ctx.fillStyle = "#1a1a1a";
+                ctx.beginPath();
+                ctx.arc(cx, cy - 10, 82, Math.PI, 0); // Top
+                ctx.lineTo(cx + 80, cy + 20);
+                ctx.quadraticCurveTo(cx + 82, cy - 30, cx, cy - 30); // Hairline
+                ctx.quadraticCurveTo(cx - 82, cy - 30, cx - 80, cy + 20);
+                ctx.fill();
+
+                // Glasses (Tech CEO)
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 3;
+                // Left
+                ctx.strokeRect(cx - 65, cy - 15, 50, 30);
+                // Right
+                ctx.strokeRect(cx + 15, cy - 15, 50, 30);
+                // Bridge
+                ctx.beginPath(); 
+                ctx.moveTo(cx - 15, cy); 
+                ctx.lineTo(cx + 15, cy); 
+                ctx.stroke();
+
+                // Eyes (Natural Blinking & Darting)
+                // Darting logic
+                let eyeX = 0;
+                if (Math.sin(t * 0.1) > 0.9) eyeX = 2;
+                else if (Math.sin(t * 0.1) < -0.9) eyeX = -2;
+
+                // Blinking logic
+                const blink = Math.sin(t * 0.8) > 0.98 ? 0.1 : 1; // Occasional blink
+
+                ctx.fillStyle = "#fff"; // Sclera
+                ctx.beginPath(); ctx.ellipse(cx - 40, cy, 12, 8 * blink, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(cx + 40, cy, 12, 8 * blink, 0, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = "#2a1a10"; // Iris/Pupil
+                ctx.beginPath(); ctx.arc(cx - 40 + eyeX, cy, 5 * blink, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(cx + 40 + eyeX, cy, 5 * blink, 0, Math.PI * 2); ctx.fill();
+
+                // Nose
+                ctx.strokeStyle = "#d1a079";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy + 10);
+                ctx.lineTo(cx - 5, cy + 35);
+                ctx.lineTo(cx + 5, cy + 35);
+                ctx.stroke();
+
+                // Mouth (Lip Sync)
+                ctx.fillStyle = "#c58c6e"; // Lip Color
+                let mouthH = 2;
+                let mouthW = 25;
+                if (isSpeaking) {
+                    // Complex movement for speech
+                    mouthH = 4 + Math.abs(Math.sin(t * 1.5)) * 10 + Math.sin(t * 3)*2;
+                    mouthW = 25 + Math.sin(t * 2) * 5;
+                }
+
+                ctx.beginPath();
+                ctx.ellipse(cx, cy + 60, mouthW, mouthH, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Teeth (if speaking loud)
+                if(mouthH > 8) {
+                    ctx.fillStyle = "#eee";
+                    ctx.fillRect(cx - 10, cy + 55, 20, 4);
+                }
+
+                ctx.restore();
+
+                animationFrameId = requestAnimationFrame(draw);
+            }
+
+            draw();
+            
+            // Return functions to control speaking state
+            return {
+                startSpeaking: () => { isSpeaking = true; },
+                stopSpeaking: () => { isSpeaking = false; }
             };
+        }
 
-            return (
-                <div className="text-white">
-                    {showDemo && <VideoModal onClose={() => setShowDemo(false)} />}
+        let avatarController = null;
 
-                    {view === 'landing' && (
-                        <LandingPage 
-                            user={user}
-                            onStart={(company) => {
-                                setConfig(company ? { company } : null);
-                                setView('setup');
-                            }}
-                            onLoginClick={() => setView('login')}
-                            onProfileClick={() => setView('profile')}
-                            onDemoClick={() => setShowDemo(true)}
-                        />
-                    )}
+        function startAvatarSpeaking() {
+            if (avatarController) {
+                avatarController.startSpeaking();
+            }
+        }
 
-                    {view === 'login' && (
-                        <LoginPage 
-                            onLogin={handleLogin} 
-                            onBack={() => setView('landing')} 
-                        />
-                    )}
+        function stopAvatarSpeaking() {
+            if (avatarController) {
+                avatarController.stopSpeaking();
+            }
+        }
 
-                    {view === 'profile' && (
-                        <ProfilePage 
-                            user={user} 
-                            history={history}
-                            onBack={() => setView('landing')}
-                        />
-                    )}
-                    
-                    {view === 'setup' && (
-                        <SetupWizard 
-                            initialCompany={config?.company}
-                            onComplete={(data) => {
-                                setConfig(data);
-                                setView('interview');
-                            }} 
-                            onBack={() => setView('landing')}
-                        />
-                    )}
+        // --- RESULTS PAGE ---
+        function initResultsPage() {
+            if (!interviewConfig) {
+                interviewConfig = Storage.get(INTERVIEW_CONFIG_KEY);
+            }
+            
+            document.getElementById('results-role').textContent = interviewConfig.role.title;
+            
+            // Populate strengths and improvements
+            const strengthsList = document.getElementById('strengths-list');
+            const improvementsList = document.getElementById('improvements-list');
+            
+            strengthsList.innerHTML = `
+                <li class="flex gap-2"><span class="text-green-500">•</span> Strong understanding of ${interviewConfig.round.title}.</li>
+                <li class="flex gap-2"><span class="text-green-500">•</span> Clear communication using the STAR method.</li>
+                <li class="flex gap-2"><span class="text-green-500">•</span> Good problem-solving approach.</li>
+            `;
+            
+            improvementsList.innerHTML = `
+                <li class="flex gap-2"><span class="text-yellow-500">•</span> Deepen knowledge on core concepts.</li>
+                <li class="flex gap-2"><span class="text-yellow-500">•</span> Reduce use of filler words ("um", "uh").</li>
+                <li class="flex gap-2"><span class="text-yellow-500">•</span> Practice more coding problems to improve speed.</li>
+            `;
+            
+            // Button event listeners
+            document.getElementById('new-session-btn').addEventListener('click', () => {
+                showPage('landing-page');
+            });
+            
+            document.getElementById('download-pdf-btn').addEventListener('click', () => {
+                alert('PDF download functionality would be implemented here with a library like jsPDF');
+            });
+            
+            document.getElementById('copy-plan-btn').addEventListener('click', () => {
+                const planText = `MockAI Improvement Plan\n\nStrengths:\n- Strong understanding of ${interviewConfig.round.title}.\n- Clear communication using the STAR method.\n- Good problem-solving approach.\n\nAreas to Improve:\n- Deepen knowledge on core concepts.\n- Reduce use of filler words ("um", "uh").\n- Practice more coding problems to improve speed.`;
+                
+                navigator.clipboard.writeText(planText)
+                    .then(() => {
+                        alert('Improvement plan copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+            });
+        }
 
-                    {view === 'interview' && (
-                        <InterviewRoom 
-                            config={config} 
-                            onEnd={() => handleFinishInterview(config)} 
-                        />
-                    )}
+        // --- PROFILE PHOTO MODAL FUNCTIONALITY ---
+        function initProfilePhotoModals() {
+            // Profile photo modal after signup
+            document.getElementById('skip-for-now').addEventListener('click', function() {
+                document.getElementById('profile-photo-modal').classList.add('hidden');
+                showPage('landing-page');
+            });
+            
+            document.getElementById('close-profile-modal').addEventListener('click', function() {
+                document.getElementById('profile-photo-modal').classList.add('hidden');
+                showPage('landing-page');
+            });
+            
+            document.getElementById('upload-from-gallery').addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    if (e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            currentUser.avatar = event.target.result;
+                            Storage.set(USER_KEY, currentUser);
+                            updateNavbar();
+                            document.getElementById('profile-photo-modal').classList.add('hidden');
+                            showPage('landing-page');
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                };
+                input.click();
+            });
+            
+            document.getElementById('take-photo').addEventListener('click', function() {
+                const cameraContainer = document.getElementById('camera-container');
+                cameraContainer.classList.remove('hidden');
+                
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        const preview = document.getElementById('camera-preview');
+                        preview.srcObject = stream;
+                    })
+                    .catch(function(err) {
+                        console.error('Error accessing camera: ', err);
+                        alert('Unable to access camera. Please try uploading a photo instead.');
+                    });
+            });
+            
+            document.getElementById('capture-photo').addEventListener('click', function() {
+                const preview = document.getElementById('camera-preview');
+                const canvas = document.createElement('canvas');
+                canvas.width = preview.videoWidth;
+                canvas.height = preview.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(preview, 0, 0);
+                
+                // Stop camera stream
+                preview.srcObject.getTracks().forEach(track => track.stop());
+                
+                // Update user avatar
+                currentUser.avatar = canvas.toDataURL('image/png');
+                Storage.set(USER_KEY, currentUser);
+                updateNavbar();
+                
+                document.getElementById('camera-container').classList.add('hidden');
+                document.getElementById('profile-photo-modal').classList.add('hidden');
+                showPage('landing-page');
+            });
+            
+            // Change profile photo modal
+            document.getElementById('close-change-photo-modal').addEventListener('click', function() {
+                document.getElementById('change-photo-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('change-upload-gallery').addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    if (e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            currentUser.avatar = event.target.result;
+                            Storage.set(USER_KEY, currentUser);
+                            updateNavbar();
+                            document.getElementById('profile-avatar').src = event.target.result;
+                            document.getElementById('change-photo-modal').classList.add('hidden');
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                };
+                input.click();
+            });
+            
+            document.getElementById('change-take-photo').addEventListener('click', function() {
+                const cameraContainer = document.getElementById('change-camera-container');
+                cameraContainer.classList.remove('hidden');
+                
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        const preview = document.getElementById('change-camera-preview');
+                        preview.srcObject = stream;
+                    })
+                    .catch(function(err) {
+                        console.error('Error accessing camera: ', err);
+                        alert('Unable to access camera. Please try uploading a photo instead.');
+                    });
+            });
+            
+            document.getElementById('change-capture-photo').addEventListener('click', function() {
+                const preview = document.getElementById('change-camera-preview');
+                const canvas = document.createElement('canvas');
+                canvas.width = preview.videoWidth;
+                canvas.height = preview.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(preview, 0, 0);
+                
+                // Stop camera stream
+                preview.srcObject.getTracks().forEach(track => track.stop());
+                
+                // Update user avatar
+                currentUser.avatar = canvas.toDataURL('image/png');
+                Storage.set(USER_KEY, currentUser);
+                updateNavbar();
+                document.getElementById('profile-avatar').src = currentUser.avatar;
+                
+                document.getElementById('change-camera-container').classList.add('hidden');
+                document.getElementById('change-photo-modal').classList.add('hidden');
+            });
+        }
 
-                    {view === 'results' && (
-                        <ResultsPage 
-                            config={config} 
-                            onRestart={() => setView('landing')} 
-                        />
-                    )}
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function() {
+            initAuth();
+            initLandingPage();
+            initProfilePhotoModals();
+            avatarController = initAvatarCanvas();
+            
+            // Initialize all pages that might need it
+            if (document.getElementById('interview-page').classList.contains('active')) {
+                initInterviewRoom();
+            }
+            
+            if (document.getElementById('results-page').classList.contains('active')) {
+                initResultsPage();
+            }
+            
+            if (document.getElementById('profile-page').classList.contains('active')) {
+                loadProfilePage();
+            }
+        });
     </script>
 </body>
 </html>
-
